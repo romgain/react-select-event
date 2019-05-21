@@ -1,0 +1,15 @@
+language: node_js
+
+node_js:
+  - "node"
+  - "lts/*"
+
+before_install:
+  - npm install
+
+script:
+  - npm test -- --coverage
+  - npm run type:check
+  - npm run prettier:check
+  - npm run build
+  - npm pack
