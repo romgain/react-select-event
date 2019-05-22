@@ -1,5 +1,4 @@
 /** Simulate user events on react-select dropdowns */
-// See https://stackoverflow.com/a/56085734
 
 import { fireEvent, findByText, getByText } from "dom-testing-library";
 
