@@ -6,6 +6,7 @@ node_js:
 
 before_install:
   - npm install
+  - npm install -g codecov
 
 script:
   - npm test:all-versions
@@ -13,3 +14,6 @@ script:
   - npm run prettier:check
   - npm run build
   - npm pack
+
+after_success:
+  - codecov
