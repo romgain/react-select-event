@@ -1,0 +1,4 @@
+react-select:
+  versions: ^2.1
+  commands: npm test -- --coverage
+  # we can't test agains 2.0.0 because of https://github.com/JedWatson/react-select/pull/2903

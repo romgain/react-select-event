@@ -8,7 +8,7 @@ before_install:
   - npm install
 
 script:
-  - npm test -- --coverage
+  - npm test:all-versions
   - npm run type:check
   - npm run prettier:check
   - npm run build

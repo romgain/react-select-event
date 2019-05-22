@@ -29,6 +29,10 @@ import selectEvent from "react-select-event";
 const selectEvent = require("react-select-event");
 ```
 
+### Supported versions of `react-select`
+
+This library is tested against all versions of `react-select` starting from `2.1.0`.
+
 ## API
 
 Every helper exported by `react-select-event` takes a handle on the `react-select` input field as its first argument. For instance, this can be: `getByLabelText("Your label name")`.
