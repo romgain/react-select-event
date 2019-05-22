@@ -9,9 +9,9 @@ before_install:
   - npm install -g codecov
 
 script:
-  - npm test:all-versions
   - npm run type:check
   - npm run prettier:check
+  - npm run test:all-versions
   - npm run build
   - npm pack
 
