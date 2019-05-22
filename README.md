@@ -11,8 +11,9 @@
 
 <hr />
 
-[![Build Status](https://travis-ci.org/romgain/react-select-event.svg?branch=master)](https://travis-ci.org/romgain/react-select-event)
 [![npm version](https://badge.fury.io/js/react-select-event.svg)](https://badge.fury.io/js/react-select-event)
+[![Build Status](https://travis-ci.org/romgain/react-select-event.svg?branch=master)](https://travis-ci.org/romgain/react-select-event)
+[![Coverage report](https://codecov.io/gh/romgain/react-select-event/branch/master/graph/badge.svg)](https://codecov.io/gh/romgain/react-select-event)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 ## Install
