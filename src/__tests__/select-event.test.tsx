@@ -1,8 +1,16 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import { render, wait } from "react-testing-library";
-import Select, { Creatable } from "react-select";
+import Select from "react-select";
 import selectEvent from "..";
+let Creatable: any;
+try {
+  // v3
+  Creatable = require("react-select/creatable").default;
+} catch (_) {
+  // v2
+  Creatable = require("react-select/lib/Creatable").default;
+}
 
 const OPTIONS = [
   { label: "Chocolate", value: "chocolate" },
@@ -33,9 +41,7 @@ describe("The select event helpers", () => {
   });
 
   it("selects several options in a multi-options input", async () => {
-    const { form, input } = renderForm(
-      <Select {...defaultProps} isMulti />
-    );
+    const { form, input } = renderForm(<Select {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
 
     await selectEvent.select(input, "Chocolate");
@@ -46,9 +52,7 @@ describe("The select event helpers", () => {
   });
 
   it("selects several options at the same time", async () => {
-    const { form, input } = renderForm(
-      <Select {...defaultProps} isMulti />
-    );
+    const { form, input } = renderForm(<Select {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.select(input, ["Strawberry", "Mango"]);
     expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
@@ -62,9 +66,7 @@ describe("The select event helpers", () => {
   });
 
   it("types in and add several options", async () => {
-    const { form, input } = renderForm(
-      <Creatable {...defaultProps} isMulti />
-    );
+    const { form, input } = renderForm(<Creatable {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
     selectEvent.create(input, "papaya");
     selectEvent.create(input, "peanut butter");
