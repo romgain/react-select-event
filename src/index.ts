@@ -1,6 +1,6 @@
 /** Simulate user events on react-select dropdowns */
 
-import { fireEvent, findByText, getByText } from "dom-testing-library";
+import { fireEvent, findByText, getByText } from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
