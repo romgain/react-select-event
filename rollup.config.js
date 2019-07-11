@@ -5,7 +5,7 @@ import pkg from "./package.json";
 export default [
   {
     input: "src/index.ts",
-    external: ["dom-testing-library"],
+    external: ["@testing-library/dom"],
     plugins: [
       resolve({ extensions: [".js", ".ts"] }),
       babel({ extensions: [".js", ".ts"] })

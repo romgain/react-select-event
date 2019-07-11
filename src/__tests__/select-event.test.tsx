@@ -1,6 +1,6 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 import React from "react";
-import { render, wait } from "react-testing-library";
+import { render, wait } from "@testing-library/react";
 import Select from "react-select";
 import selectEvent from "..";
 let Creatable: any;
