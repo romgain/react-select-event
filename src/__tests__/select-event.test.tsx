@@ -1,18 +1,27 @@
 import "@testing-library/jest-dom/extend-expect";
 import React from "react";
-import { render, wait } from "@testing-library/react";
+import { render, wait, fireEvent } from "@testing-library/react";
 import Select from "react-select";
 import selectEvent from "..";
+let Async: any;
 let Creatable: any;
 try {
   // v3
+  Async = require("react-select/async").default;
   Creatable = require("react-select/creatable").default;
 } catch (_) {
   // v2
+  Async = require("react-select/lib/Async").default;
   Creatable = require("react-select/lib/Creatable").default;
 }
 
-const OPTIONS = [
+interface Option {
+  label: string;
+  value: string;
+}
+type Options = Array<Option>;
+
+const OPTIONS: Options = [
   { label: "Chocolate", value: "chocolate" },
   { label: "Vanilla", value: "vanilla" },
   { label: "Strawberry", value: "strawberry" },
@@ -71,6 +80,21 @@ describe("The select event helpers", () => {
     selectEvent.create(input, "papaya");
     selectEvent.create(input, "peanut butter");
     expect(form).toHaveFormValues({ food: ["papaya", "peanut butter"] });
+  });
+
+  it("selects an option in an async input", async () => {
+    type Callback = (options: Options) => void;
+    const loadOptions = (_: string, callback: Callback) =>
+      setTimeout(() => callback(OPTIONS), 100);
+    const { form, input } = renderForm(
+      <Async {...defaultProps} loadOptions={loadOptions} options={[]} />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+
+    // start typing to trigger the `loadOptions`
+    fireEvent.change(input, { target: { value: "Choc" } });
+    await selectEvent.select(input, "Chocolate");
+    expect(form).toHaveFormValues({ food: "chocolate" });
   });
 
   it("clears the first item in a single-select dropdown", async () => {
