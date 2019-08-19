@@ -1,5 +1,4 @@
 module.exports = {
-  setupFilesAfterEnv: ["@testing-library/react/cleanup-after-each"],
   coverageThreshold: {
     global: {
       branches: 100,
