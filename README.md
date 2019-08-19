@@ -60,6 +60,31 @@ expect(getByTestId("form")).toHaveFormValues({
 });
 ```
 
+This also works for [async selects](https://react-select.com/async):
+
+```jsx
+const { getByTestId, getByLabelText } = render(
+  <form data-testid="form">
+    <label htmlFor="food">Food</label>
+    <Async
+      options={[]}
+      loadOptions={fetchTheOptions}
+      name="food"
+      inputId="food"
+      isMulti
+    />
+  </form>
+);
+expect(getByTestId("form")).toHaveFormValues({ food: "" });
+
+// start typing to trigger the `loadOptions`
+fireEvent.change(getByLabelText("Food"), { target: { value: "Choc" } });
+await selectEvent.select(getByLabelText("Food"), "Chocolate");
+expect(getByTestId("form")).toHaveFormValues({
+  food: ["chocolate"]
+});
+```
+
 ### `create(input: HTMLElement, option: string): void`
 
 Creates and selects a new item. Only applicable to `react-select` [`Creatable`](https://react-select.com/creatable) elements.
