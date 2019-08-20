@@ -5,16 +5,20 @@ import Select from "react-select";
 import selectEvent from "..";
 let Async: any;
 let Creatable: any;
+let AsyncCreatable: any;
 try {
   // v3
   Async = require("react-select/async").default;
   Creatable = require("react-select/creatable").default;
+  AsyncCreatable = require("react-select/async-creatable").default;
 } catch (_) {
   // v2
   Async = require("react-select/lib/Async").default;
   Creatable = require("react-select/lib/Creatable").default;
+  AsyncCreatable = require("react-select/lib/AsyncCreatable").default;
 }
 
+type Callback = (options: Options) => void;
 interface Option {
   label: string;
   value: string;
@@ -83,7 +87,6 @@ describe("The select event helpers", () => {
   });
 
   it("selects an option in an async input", async () => {
-    type Callback = (options: Options) => void;
     const loadOptions = (_: string, callback: Callback) =>
       setTimeout(() => callback(OPTIONS), 100);
     const { form, input } = renderForm(
@@ -95,6 +98,46 @@ describe("The select event helpers", () => {
     fireEvent.change(input, { target: { value: "Choc" } });
     await selectEvent.select(input, "Chocolate");
     expect(form).toHaveFormValues({ food: "chocolate" });
+  });
+
+  it("creates a new option in an async input", async () => {
+    const asyncOptions = [...OPTIONS];
+    const loadOptions = (_: string, callback: Callback) =>
+      setTimeout(() => callback(asyncOptions), 1);
+
+    // simulate waiting for a BE response
+    const handleCreate = (inputValue: any) => {
+      return new Promise(resolve =>
+        setTimeout(() => {
+          const newOption = { label: inputValue, value: inputValue };
+          asyncOptions.push(newOption);
+          resolve();
+        }, 1)
+      );
+    };
+
+    const { input } = renderForm(
+      <AsyncCreatable
+        {...defaultProps}
+        loadOptions={loadOptions}
+        options={[]}
+        onCreateOption={handleCreate}
+      />
+    );
+    expect(asyncOptions).toEqual(OPTIONS);
+
+    // this doesn't work
+    await selectEvent.create(input, "papaya");
+
+    // this does work
+    // fireEvent.change(input, { target: { value: "papaya" } });
+    // await selectEvent.select(input, 'Create "papaya"');
+    await wait();
+
+    expect(asyncOptions).toEqual([
+      ...OPTIONS,
+      { label: "papaya", value: "papaya" }
+    ]);
   });
 
   it("clears the first item in a single-select dropdown", async () => {
