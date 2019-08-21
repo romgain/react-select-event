@@ -81,8 +81,8 @@ describe("The select event helpers", () => {
   it("types in and add several options", async () => {
     const { form, input } = renderForm(<Creatable {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
-    selectEvent.create(input, "papaya");
-    selectEvent.create(input, "peanut butter");
+    await selectEvent.create(input, "papaya");
+    await selectEvent.create(input, "peanut butter");
     expect(form).toHaveFormValues({ food: ["papaya", "peanut butter"] });
   });
 
@@ -100,44 +100,43 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "chocolate" });
   });
 
-  it("creates a new option in an async input", async () => {
-    const asyncOptions = [...OPTIONS];
-    const loadOptions = (_: string, callback: Callback) =>
-      setTimeout(() => callback(asyncOptions), 1);
-
-    // simulate waiting for a BE response
-    const handleCreate = (inputValue: any) => {
-      return new Promise(resolve =>
+  it("types in and adds a new option in an async input", async () => {
+    // from https://github.com/JedWatson/react-select/blob/v3.0.0/docs/examples/CreatableAdvanced.js
+    type State = { options: Options; value: Option | void; isLoading: boolean };
+    class CreatableAdvanced extends React.Component<{}, State> {
+      state = { isLoading: false, options: [], value: undefined };
+      handleChange = (newValue: Option) => this.setState({ value: newValue });
+      handleCreate = (inputValue: string) => {
+        this.setState({ isLoading: true });
         setTimeout(() => {
+          const { options } = this.state;
           const newOption = { label: inputValue, value: inputValue };
-          asyncOptions.push(newOption);
-          resolve();
-        }, 1)
-      );
-    };
-
-    const { input } = renderForm(
-      <AsyncCreatable
-        {...defaultProps}
-        loadOptions={loadOptions}
-        options={[]}
-        onCreateOption={handleCreate}
-      />
-    );
-    expect(asyncOptions).toEqual(OPTIONS);
-
-    // this doesn't work
+          this.setState({
+            isLoading: false,
+            options: [...options, newOption],
+            value: newOption
+          });
+        }, 500);
+      };
+      render() {
+        const { isLoading, options, value } = this.state;
+        return (
+          <AsyncCreatable
+            {...this.props}
+            isClearable
+            isDisabled={isLoading}
+            isLoading={isLoading}
+            onChange={this.handleChange}
+            onCreateOption={this.handleCreate}
+            options={options}
+            value={value}
+          />
+        );
+      }
+    }
+    const { form, input } = renderForm(<CreatableAdvanced {...defaultProps} />);
     await selectEvent.create(input, "papaya");
-
-    // this does work
-    // fireEvent.change(input, { target: { value: "papaya" } });
-    // await selectEvent.select(input, 'Create "papaya"');
-    await wait();
-
-    expect(asyncOptions).toEqual([
-      ...OPTIONS,
-      { label: "papaya", value: "papaya" }
-    ]);
+    expect(form).toHaveFormValues({ food: "papaya" });
   });
 
   it("clears the first item in a single-select dropdown", async () => {

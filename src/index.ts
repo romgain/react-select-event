@@ -50,7 +50,7 @@ export const select = async (
  * @param input The input field (eg. `getByLabelText('The label')`)
  * @param option The display name for the option to type and select
  */
-export const create = (input: HTMLElement, option: string) => {
+export const create = async (input: HTMLElement, option: string) => {
   focus(input);
   type(input, option);
   // hit Enter to add the item
@@ -59,6 +59,7 @@ export const create = (input: HTMLElement, option: string) => {
     keyCode: 13,
     code: 13
   });
+  await findByText(getReactSelectContainerFromInput(input), option);
 };
 
 /**
