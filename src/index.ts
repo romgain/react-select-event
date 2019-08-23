@@ -1,6 +1,6 @@
 /** Simulate user events on react-select dropdowns */
 
-import { fireEvent, findByText, getByText } from "@testing-library/dom";
+import { fireEvent, findByText } from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
@@ -30,7 +30,7 @@ const type = (input: HTMLElement, text: string) => {
  */
 export const select = async (
   input: HTMLElement,
-  optionOrOptions: string | Array<string>
+  optionOrOptions: string | RegExp | Array<string | RegExp>
 ) => {
   const options = Array.isArray(optionOrOptions)
     ? optionOrOptions
@@ -40,25 +40,34 @@ export const select = async (
   // Select the items we care about
   for (const option of options) {
     focus(input);
-    await findByText(container, option);
-    fireEvent.click(getByText(container, option));
+
+    // only consider accessible elements
+    const optionElement = await findByText(container, option, {
+      // @ts-ignore invalid rtl types :'(
+      ignore: ":not([tabindex])"
+    });
+    fireEvent.click(optionElement);
   }
 };
 
 /**
  * Utility for creating and selecting a value in a Creatable `react-select` dropdown.
+ * @async
  * @param input The input field (eg. `getByLabelText('The label')`)
  * @param option The display name for the option to type and select
+ * @param createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
-export const create = async (input: HTMLElement, option: string) => {
+export const create = async (
+  input: HTMLElement,
+  option: string,
+  createOptionText: string | RegExp = /^Create "/
+) => {
   focus(input);
   type(input, option);
-  // hit Enter to add the item
-  fireEvent.keyDown(input, {
-    key: "Enter",
-    keyCode: 13,
-    code: 13
-  });
+
+  fireEvent.change(input, { target: { value: option } });
+  await select(input, createOptionText);
+
   await findByText(getReactSelectContainerFromInput(input), option);
 };
 
