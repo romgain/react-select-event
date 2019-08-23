@@ -214,21 +214,19 @@ describe("The select event helpers", () => {
     }
 
     it("types in and adds a new option when having similar options", async () => {
-      const { form, input, debug } = renderForm(<CreatableAdvanced {...defaultProps} />);
+      const { form, input } = renderForm(<CreatableAdvanced {...defaultProps} />);
 
       await selectEvent.create(input, "Choco");
       await wait();
-      debug();
 
       expect(form).toHaveFormValues({ food: "Choco" });
     });
 
     it("types in and adds a new option when not having similar options", async () => {
-      const { form, input, debug } = renderForm(<CreatableAdvanced {...defaultProps} />);
+      const { form, input } = renderForm(<CreatableAdvanced {...defaultProps} />);
 
       await selectEvent.create(input, "papaya");
       await wait();
-      debug();
 
       expect(form).toHaveFormValues({ food: "papaya" });
     });

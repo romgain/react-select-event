@@ -30,7 +30,7 @@ const type = (input: HTMLElement, text: string) => {
  */
 export const select = async (
   input: HTMLElement,
-  optionOrOptions: string | Array<string>
+  optionOrOptions: string | RegExp | Array<string | RegExp>
 ) => {
   const options = Array.isArray(optionOrOptions)
     ? optionOrOptions
@@ -47,18 +47,18 @@ export const select = async (
 
 /**
  * Utility for creating and selecting a value in a Creatable `react-select` dropdown.
+ * @async
  * @param input The input field (eg. `getByLabelText('The label')`)
  * @param option The display name for the option to type and select
+ * @param createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
-export const create = async (input: HTMLElement, option: string) => {
+export const create = async (input: HTMLElement, option: string, createOptionText: string | RegExp = /^Create "/) => {
   focus(input);
   type(input, option);
-  // hit Enter to add the item
-  fireEvent.keyDown(input, {
-    key: "Enter",
-    keyCode: 13,
-    code: 13
-  });
+
+  fireEvent.change(input, { target: { value: option } });
+  await select(input, createOptionText);
+
   await findByText(getReactSelectContainerFromInput(input), option);
 };
 
