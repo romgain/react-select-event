@@ -78,6 +78,48 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "papaya" });
   });
 
+  it("types in and add a new option with custom create label when searching by fixed string", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        formatCreateLabel={() => "Add new option"}
+      />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+
+    await selectEvent.create(input, "papaya", "Add new option");
+
+    expect(form).toHaveFormValues({ food: "papaya" });
+  });
+
+  it("types in and add a new option with custom create label when searching by dynamic string", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        formatCreateLabel={(inputValue: string) => inputValue}
+      />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+
+    await selectEvent.create(input, "papaya", "papaya");
+
+    expect(form).toHaveFormValues({ food: "papaya" });
+  });
+
+  it("types in and add a new option with custom create label when searching by regexp", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        formatCreateLabel={(inputValue: string) => `Generate new option "${inputValue}"`}
+      />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+
+    await selectEvent.create(input, "papaya", /Generate/);
+
+    expect(form).toHaveFormValues({ food: "papaya" });
+  });
+
   it("types in and add several options", async () => {
     const { form, input } = renderForm(<Creatable {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
@@ -163,23 +205,26 @@ describe("The select event helpers", () => {
     });
   });
 
-  describe('AsyncCreatable', () => {
+  describe("AsyncCreatable", () => {
     // from https://github.com/JedWatson/react-select/blob/v3.0.0/docs/examples/CreatableAdvanced.js
     // mixed with Async Creatable Example from https://react-select.com/creatable
     type State = { options: Options; value: Option | void; isLoading: boolean };
 
     const filterOptions = (options: Options, inputValue: string) => {
-      return options.filter(i => i.label.toLowerCase().includes(inputValue.toLowerCase()))
+      return options.filter(i =>
+        i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
     };
 
     class CreatableAdvanced extends React.Component<{}, State> {
       state = { isLoading: false, options: OPTIONS, value: undefined };
 
-      handlePromiseOptions = (inputValue: string) => new Promise(resolve => {
-        setTimeout(() => {
-          resolve(filterOptions(this.state.options, inputValue))
-        }, 5);
-      });
+      handlePromiseOptions = (inputValue: string) =>
+        new Promise(resolve => {
+          setTimeout(() => {
+            resolve(filterOptions(this.state.options, inputValue));
+          }, 5);
+        });
 
       handleChange = (newValue: Option) => this.setState({ value: newValue });
 
@@ -199,22 +244,24 @@ describe("The select event helpers", () => {
       render() {
         const { isLoading, value } = this.state;
         return (
-            <AsyncCreatable
-                {...this.props}
-                isClearable
-                isDisabled={isLoading}
-                isLoading={isLoading}
-                onChange={this.handleChange}
-                onCreateOption={this.handleCreate}
-                loadOptions={this.handlePromiseOptions}
-                value={value}
-            />
+          <AsyncCreatable
+            {...this.props}
+            isClearable
+            isDisabled={isLoading}
+            isLoading={isLoading}
+            onChange={this.handleChange}
+            onCreateOption={this.handleCreate}
+            loadOptions={this.handlePromiseOptions}
+            value={value}
+          />
         );
       }
     }
 
     it("types in and adds a new option when having similar options", async () => {
-      const { form, input } = renderForm(<CreatableAdvanced {...defaultProps} />);
+      const { form, input } = renderForm(
+        <CreatableAdvanced {...defaultProps} />
+      );
 
       await selectEvent.create(input, "Choco");
       await wait();
@@ -223,7 +270,9 @@ describe("The select event helpers", () => {
     });
 
     it("types in and adds a new option when not having similar options", async () => {
-      const { form, input } = renderForm(<CreatableAdvanced {...defaultProps} />);
+      const { form, input } = renderForm(
+        <CreatableAdvanced {...defaultProps} />
+      );
 
       await selectEvent.create(input, "papaya");
       await wait();

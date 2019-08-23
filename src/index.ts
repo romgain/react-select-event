@@ -1,6 +1,11 @@
 /** Simulate user events on react-select dropdowns */
 
-import { fireEvent, findByText, getByText } from "@testing-library/dom";
+import {
+  fireEvent,
+  findByText,
+  getByText,
+  findAllByText
+} from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
@@ -40,8 +45,9 @@ export const select = async (
   // Select the items we care about
   for (const option of options) {
     focus(input);
-    await findByText(container, option);
-    fireEvent.click(getByText(container, option));
+    const elementsMatchingText = await findAllByText(container, option);
+    const optionContainer = elementsMatchingText[elementsMatchingText.length - 1];
+    fireEvent.click(getByText(optionContainer, option));
   }
 };
 
@@ -52,7 +58,11 @@ export const select = async (
  * @param option The display name for the option to type and select
  * @param createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
-export const create = async (input: HTMLElement, option: string, createOptionText: string | RegExp = /^Create "/) => {
+export const create = async (
+  input: HTMLElement,
+  option: string,
+  createOptionText: string | RegExp = /^Create "/
+) => {
   focus(input);
   type(input, option);
 
