@@ -38,7 +38,7 @@ This library is tested against all versions of `react-select` starting from `2.1
 
 Every helper exported by `react-select-event` takes a handle on the `react-select` input field as its first argument. For instance, this can be: `getByLabelText("Your label name")`.
 
-### `select(input: HTMLElement, optionOrOptions: string | Array<string>): Promise<void>`
+### `select(input: HTMLElement, optionOrOptions: string | RegExp | Array<string | RegExp>): Promise<void>`
 
 Select one or more values in a react-select dropdown.
 
@@ -85,7 +85,7 @@ expect(getByTestId("form")).toHaveFormValues({
 });
 ```
 
-### `create(input: HTMLElement, option: string): void`
+### `create(input: HTMLElement, option: string, createOptionText: string | RegExp = /^Create "/): Promise<void>`
 
 Creates and selects a new item. Only applicable to `react-select` [`Creatable`](https://react-select.com/creatable) elements.
 
@@ -100,6 +100,8 @@ expect(getByTestId("form")).toHaveFormValues({ food: "" });
 await selectEvent.create(getByLabelText("Food"), "papaya");
 expect(getByTestId("form")).toHaveFormValues({ food: "papaya" });
 ```
+
+`create` take a third, optional parameter, only necessary when [creating elements with a custom label text, using the `formatCreateLabel` prop](https://react-select.com/props#creatable-props).
 
 ### `clearFirst(input: HTMLElement): void`
 
