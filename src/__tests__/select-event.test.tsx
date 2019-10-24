@@ -80,10 +80,7 @@ describe("The select event helpers", () => {
 
   it("types in and add a new option with custom create label when searching by fixed string", async () => {
     const { form, input } = renderForm(
-      <Creatable
-        {...defaultProps}
-        formatCreateLabel={() => "Add new option"}
-      />
+      <Creatable {...defaultProps} formatCreateLabel={() => "Add new option"} />
     );
     expect(form).toHaveFormValues({ food: "" });
 
@@ -110,7 +107,9 @@ describe("The select event helpers", () => {
     const { form, input } = renderForm(
       <Creatable
         {...defaultProps}
-        formatCreateLabel={(inputValue: string) => `Generate new option "${inputValue}"`}
+        formatCreateLabel={(inputValue: string) =>
+          `Generate new option "${inputValue}"`
+        }
       />
     );
     expect(form).toHaveFormValues({ food: "" });
