@@ -146,10 +146,8 @@ describe("The select event helpers", () => {
       <Creatable {...defaultProps} isMulti defaultValue={OPTIONS[0]} />
     );
     expect(form).toHaveFormValues({ food: "chocolate" });
-    selectEvent.clearFirst(input);
-    await wait(() => {
-      expect(form).toHaveFormValues({ food: "" });
-    });
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: "" });
   });
 
   it("clears the first item in a multi-select dropdown", async () => {
@@ -164,15 +162,11 @@ describe("The select event helpers", () => {
       food: ["chocolate", "vanilla", "strawberry"]
     });
 
-    selectEvent.clearFirst(input);
-    await wait(() => {
-      expect(form).toHaveFormValues({ food: ["vanilla", "strawberry"] });
-    });
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: ["vanilla", "strawberry"] });
 
-    selectEvent.clearFirst(input);
-    await wait(() => {
-      expect(form).toHaveFormValues({ food: "strawberry" });
-    });
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: "strawberry" });
   });
 
   it("clears the first item in a non-createable dropdown", async () => {
@@ -180,10 +174,19 @@ describe("The select event helpers", () => {
       <Select {...defaultProps} defaultValue={OPTIONS[0]} isClearable />
     );
     expect(form).toHaveFormValues({ food: "chocolate" });
-    selectEvent.clearFirst(input);
-    await wait(() => {
-      expect(form).toHaveFormValues({ food: "" });
-    });
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: "" });
+  });
+
+  it("clears, then re-selects an item", async () => {
+    const { form, input } = renderForm(
+      <Select {...defaultProps} defaultValue={OPTIONS[0]} isClearable />
+    );
+    expect(form).toHaveFormValues({ food: "chocolate" });
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, "Chocolate");
+    expect(form).toHaveFormValues({ food: "chocolate" });
   });
 
   it("clears all items in a single-select dropdown", async () => {
@@ -191,10 +194,8 @@ describe("The select event helpers", () => {
       <Creatable {...defaultProps} isMulti defaultValue={OPTIONS[0]} />
     );
     expect(form).toHaveFormValues({ food: "chocolate" });
-    selectEvent.clearAll(input);
-    await wait(() => {
-      expect(form).toHaveFormValues({ food: "" });
-    });
+    await selectEvent.clearAll(input);
+    expect(form).toHaveFormValues({ food: "" });
   });
 
   it("clears all items in a multi-select dropdown", async () => {
@@ -209,10 +210,26 @@ describe("The select event helpers", () => {
       food: ["chocolate", "vanilla", "strawberry"]
     });
 
-    selectEvent.clearAll(input);
-    await wait(() => {
-      expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.clearAll(input);
+    expect(form).toHaveFormValues({ food: "" });
+  });
+
+  it("clears all items, then selects a new one", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+      />
+    );
+    expect(form).toHaveFormValues({
+      food: ["chocolate", "vanilla", "strawberry"]
     });
+
+    await selectEvent.clearAll(input);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, "Vanilla");
+    expect(form).toHaveFormValues({ food: "vanilla" });
   });
 
   describe("AsyncCreatable", () => {

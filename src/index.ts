@@ -1,6 +1,6 @@
 /** Simulate user events on react-select dropdowns */
 
-import { fireEvent, findByText } from "@testing-library/dom";
+import { fireEvent, findByText, wait } from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
@@ -21,6 +21,15 @@ const focus = (input: HTMLElement) => {
 // type text in the input field
 const type = (input: HTMLElement, text: string) => {
   fireEvent.change(input, { target: { value: text } });
+};
+
+// press the "clear" button, and reset various states
+const clear = async (input: HTMLElement, clearButton: Element) => {
+  fireEvent.mouseDown(clearButton);
+  fireEvent.click(clearButton);
+  // react-select will prevent the menu from opening, and asynchronously focus the select field...
+  await wait();
+  input.blur();
 };
 
 /**
@@ -75,26 +84,24 @@ export const create = async (
  * Utility for clearing the first value of a `react-select` dropdown.
  * @param input The input field (eg. `getByLabelText('The label')`)
  */
-export const clearFirst = (input: HTMLElement) => {
+export const clearFirst = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
   // The "clear" button is the first svg element that is hidden to screen readers
   const clearButton = container.querySelector('svg[aria-hidden="true"]')!;
-  fireEvent.mouseDown(clearButton);
-  fireEvent.click(clearButton);
+  await clear(input, clearButton);
 };
 
 /**
  * Utility for clearing all values in a `react-select` dropdown.
  * @param input The input field (eg. `getByLabelText('The label')`)
  */
-export const clearAll = (input: HTMLElement) => {
+export const clearAll = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
   // The "clear all" button is the penultimate svg element that is hidden to screen readers
   // (the last one is the dropdown arrow)
   const elements = container.querySelectorAll('svg[aria-hidden="true"]');
   const clearAllButton = elements[elements.length - 2];
-  fireEvent.mouseDown(clearAllButton);
-  fireEvent.click(clearAllButton);
+  await clear(input, clearAllButton);
 };
 
 export default { select, create, clearFirst, clearAll };
