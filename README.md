@@ -103,7 +103,7 @@ expect(getByTestId("form")).toHaveFormValues({ food: "papaya" });
 
 `create` take a third, optional parameter, only necessary when [creating elements with a custom label text, using the `formatCreateLabel` prop](https://react-select.com/props#creatable-props).
 
-### `clearFirst(input: HTMLElement): void`
+### `clearFirst(input: HTMLElement): Promise<void>`
 
 Clears the first value in the dropdown.
 
@@ -121,13 +121,11 @@ const { getByTestId, getByLabelText } = render(
   </form>
 );
 expect(getByTestId("form")).toHaveFormValues({ food: "chocolate" });
-selectEvent.clearFirst(getByLabelText("Food"));
-await wait(() => {
-  expect(getByTestId("form")).toHaveFormValues({ food: "" });
-});
+await selectEvent.clearFirst(getByLabelText("Food"));
+expect(getByTestId("form")).toHaveFormValues({ food: "" });
 ```
 
-### `clearAll(input: HTMLElement): void`
+### `clearAll(input: HTMLElement): Promise<void>`
 
 Clears all values in the dropdown.
 
@@ -147,10 +145,8 @@ const { getByTestId, getByLabelText } = render(
 expect(getByTestId("form")).toHaveFormValues({
   food: ["chocolate", "vanilla", "strawberry"]
 });
-selectEvent.clearFirst(getByLabelText("Food"));
-await wait(() => {
-  expect(getByTestId("form")).toHaveFormValues({ food: "" });
-});
+await selectEvent.clearFirst(getByLabelText("Food"));
+expect(getByTestId("form")).toHaveFormValues({ food: "" });
 ```
 
 ## Credits
