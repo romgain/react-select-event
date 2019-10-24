@@ -78,7 +78,9 @@ export const create = async (
 export const clearFirst = (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
   // The "clear" button is the first svg element that is hidden to screen readers
-  fireEvent.click(container.querySelector('svg[aria-hidden="true"]')!);
+  const clearButton = container.querySelector('svg[aria-hidden="true"]')!;
+  fireEvent.mouseDown(clearButton);
+  fireEvent.click(clearButton);
 };
 
 /**
@@ -90,8 +92,9 @@ export const clearAll = (input: HTMLElement) => {
   // The "clear all" button is the penultimate svg element that is hidden to screen readers
   // (the last one is the dropdown arrow)
   const elements = container.querySelectorAll('svg[aria-hidden="true"]');
-  const element = elements[elements.length - 2];
-  fireEvent.mouseDown(element);
+  const clearAllButton = elements[elements.length - 2];
+  fireEvent.mouseDown(clearAllButton);
+  fireEvent.click(clearAllButton);
 };
 
 export default { select, create, clearFirst, clearAll };

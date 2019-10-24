@@ -176,6 +176,17 @@ describe("The select event helpers", () => {
     });
   });
 
+  it("clears the first item in a non-createable dropdown", async () => {
+    const { form, input } = renderForm(
+      <Select {...defaultProps} defaultValue={OPTIONS[0]} isClearable />
+    );
+    expect(form).toHaveFormValues({ food: "chocolate" });
+    selectEvent.clearFirst(input);
+    await wait(() => {
+      expect(form).toHaveFormValues({ food: "" });
+    });
+  });
+
   it("clears all items in a single-select dropdown", async () => {
     const { form, input } = renderForm(
       <Creatable {...defaultProps} isMulti defaultValue={OPTIONS[0]} />
