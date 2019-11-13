@@ -145,7 +145,7 @@ const { getByTestId, getByLabelText } = render(
 expect(getByTestId("form")).toHaveFormValues({
   food: ["chocolate", "vanilla", "strawberry"]
 });
-await selectEvent.clearFirst(getByLabelText("Food"));
+await selectEvent.clearAll(getByLabelText("Food"));
 expect(getByTestId("form")).toHaveFormValues({ food: "" });
 ```
 
