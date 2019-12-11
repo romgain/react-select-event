@@ -71,14 +71,14 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
   });
 
-  it("types in and add a new option", async () => {
+  it("types in and adds a new option", async () => {
     const { form, input } = renderForm(<Creatable {...defaultProps} />);
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.create(input, "papaya");
     expect(form).toHaveFormValues({ food: "papaya" });
   });
 
-  it("types in and add a new option with custom create label when searching by fixed string", async () => {
+  it("types in and adds a new option with custom create label when searching by fixed string", async () => {
     const { form, input } = renderForm(
       <Creatable {...defaultProps} formatCreateLabel={() => "Add new option"} />
     );
@@ -89,7 +89,7 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "papaya" });
   });
 
-  it("types in and add a new option with custom create label when searching by dynamic string", async () => {
+  it("types in and adds a new option with custom create label when searching by dynamic string", async () => {
     const { form, input } = renderForm(
       <Creatable
         {...defaultProps}
@@ -103,7 +103,7 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "papaya" });
   });
 
-  it("types in and add a new option with custom create label when searching by regexp", async () => {
+  it("types in and adds a new option with custom create label when searching by regexp", async () => {
     const { form, input } = renderForm(
       <Creatable
         {...defaultProps}
@@ -119,7 +119,7 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "papaya" });
   });
 
-  it("types in and add several options", async () => {
+  it("types in and adds several options", async () => {
     const { form, input } = renderForm(<Creatable {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.create(input, "papaya");
@@ -232,7 +232,7 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "vanilla" });
   });
 
-  describe("AsyncCreatable", () => {
+  describe("when asynchronously generating the list of options", () => {
     // from https://github.com/JedWatson/react-select/blob/v3.0.0/docs/examples/CreatableAdvanced.js
     // mixed with Async Creatable Example from https://react-select.com/creatable
     type State = { options: Options; value: Option | void; isLoading: boolean };
