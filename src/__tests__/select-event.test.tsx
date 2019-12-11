@@ -84,7 +84,9 @@ describe("The select event helpers", () => {
     );
     expect(form).toHaveFormValues({ food: "" });
 
-    await selectEvent.create(input, "papaya", "Add new option");
+    await selectEvent.create(input, "papaya", {
+      createOptionText: "Add new option"
+    });
 
     expect(form).toHaveFormValues({ food: "papaya" });
   });
@@ -98,7 +100,7 @@ describe("The select event helpers", () => {
     );
     expect(form).toHaveFormValues({ food: "" });
 
-    await selectEvent.create(input, "papaya", "papaya");
+    await selectEvent.create(input, "papaya", { createOptionText: "papaya" });
 
     expect(form).toHaveFormValues({ food: "papaya" });
   });
@@ -114,7 +116,7 @@ describe("The select event helpers", () => {
     );
     expect(form).toHaveFormValues({ food: "" });
 
-    await selectEvent.create(input, "papaya", /Generate/);
+    await selectEvent.create(input, "papaya", { createOptionText: /Generate/ });
 
     expect(form).toHaveFormValues({ food: "papaya" });
   });
@@ -305,6 +307,62 @@ describe("The select event helpers", () => {
       await wait();
 
       expect(form).toHaveFormValues({ food: "papaya" });
+    });
+  });
+
+  describe("when rendering the dropdown in a portal", () => {
+    it("selects an option", async () => {
+      const { form, input } = renderForm(
+        <Select {...defaultProps} menuPortalTarget={document.body} />
+      );
+      expect(form).toHaveFormValues({ food: "" });
+      await selectEvent.select(input, "Chocolate", {
+        container: document.body
+      });
+      expect(form).toHaveFormValues({ food: "chocolate" });
+    });
+
+    it("types in and adds a new option", async () => {
+      const { form, input } = renderForm(
+        <Creatable {...defaultProps} menuPortalTarget={document.body} />
+      );
+      expect(form).toHaveFormValues({ food: "" });
+      await selectEvent.create(input, "papaya", { container: document.body });
+      expect(form).toHaveFormValues({ food: "papaya" });
+    });
+
+    it("clears the first item in a multi-select dropdown", async () => {
+      const { form, input } = renderForm(
+        <Creatable
+          {...defaultProps}
+          isMulti
+          defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+          menuPortalTarget={document.body}
+        />
+      );
+      expect(form).toHaveFormValues({
+        food: ["chocolate", "vanilla", "strawberry"]
+      });
+
+      await selectEvent.clearFirst(input);
+      expect(form).toHaveFormValues({ food: ["vanilla", "strawberry"] });
+    });
+
+    it("clears all items", async () => {
+      const { form, input } = renderForm(
+        <Creatable
+          {...defaultProps}
+          isMulti
+          defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+          menuPortalTarget={document.body}
+        />
+      );
+      expect(form).toHaveFormValues({
+        food: ["chocolate", "vanilla", "strawberry"]
+      });
+
+      await selectEvent.clearAll(input);
+      expect(form).toHaveFormValues({ food: "" });
     });
   });
 });

@@ -38,7 +38,7 @@ This library is tested against all versions of `react-select` starting from `2.1
 
 Every helper exported by `react-select-event` takes a handle on the `react-select` input field as its first argument. For instance, this can be: `getByLabelText("Your label name")`.
 
-### `select(input: HTMLElement, optionOrOptions: string | RegExp | Array<string | RegExp>): Promise<void>`
+### `select(input: HTMLElement, optionOrOptions: string | RegExp | Array<string | RegExp>, config?: object): Promise<void>`
 
 Select one or more values in a react-select dropdown.
 
@@ -85,7 +85,30 @@ expect(getByTestId("form")).toHaveFormValues({
 });
 ```
 
-### `create(input: HTMLElement, option: string, createOptionText: string | RegExp = /^Create "/): Promise<void>`
+`select` also accepts an optional `config` parameter.
+`config.container` can be used to specify a custom container to use when the `react-select` dropdown is rendered
+in a portal using `menuPortalTarget`:
+
+```jsx
+const { getByTestId, getByLabelText } = render(
+  <form data-testid="form">
+    <label htmlFor="food">Food</label>
+    <Select
+      options={OPTIONS}
+      name="food"
+      inputId="food"
+      isMulti
+      menuPortalTarget={document.body}
+    />
+  </form>
+);
+await selectEvent.select(getByLabelText("Food"), ["Strawberry", "Mango"], {
+  container: document.body
+});
+expect(getByTestId("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
+```
+
+### `create(input: HTMLElement, option: string, config?: object): Promise<void> }`
 
 Creates and selects a new item. Only applicable to `react-select` [`Creatable`](https://react-select.com/creatable) elements.
 
@@ -101,7 +124,10 @@ await selectEvent.create(getByLabelText("Food"), "papaya");
 expect(getByTestId("form")).toHaveFormValues({ food: "papaya" });
 ```
 
-`create` take a third, optional parameter, only necessary when [creating elements with a custom label text, using the `formatCreateLabel` prop](https://react-select.com/props#creatable-props).
+`create` take an optional `config` parameter:
+
+- `config.createOptionText` can be used when [creating elements with a custom label text, using the `formatCreateLabel` prop](https://react-select.com/props#creatable-props).
+- `config.container` can be used when the `react-select` dropdown is rendered in a portal using `menuPortalTarget`.
 
 ### `clearFirst(input: HTMLElement): Promise<void>`
 

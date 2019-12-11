@@ -32,19 +32,30 @@ const clear = async (input: HTMLElement, clearButton: Element) => {
   input.blur();
 };
 
+interface Config {
+  /** A container where the react-select dropdown gets rendered to.
+   *  Useful when rendering the dropdown in a portal using `menuPortalTarget`.
+   */
+  container?: HTMLElement;
+}
+
 /**
  * Utility for selecting a value in a `react-select` dropdown.
  * @param input The input field (eg. `getByLabelText('The label')`)
  * @param optionOrOptions The display name(s) for the option(s) to select
+ * @param config Optional config options
+ * @param config.container A container for the react-select and its dropdown (defaults to the react-select container)
+ *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
  */
 export const select = async (
   input: HTMLElement,
-  optionOrOptions: string | RegExp | Array<string | RegExp>
+  optionOrOptions: string | RegExp | Array<string | RegExp>,
+  config: Config = {}
 ) => {
   const options = Array.isArray(optionOrOptions)
     ? optionOrOptions
     : [optionOrOptions];
-  const container = getReactSelectContainerFromInput(input);
+  const container = config.container || getReactSelectContainerFromInput(input);
 
   // Select the items we care about
   for (const option of options) {
@@ -59,23 +70,30 @@ export const select = async (
   }
 };
 
+interface CreateConfig extends Config {
+  createOptionText?: string | RegExp;
+}
 /**
  * Utility for creating and selecting a value in a Creatable `react-select` dropdown.
  * @async
  * @param input The input field (eg. `getByLabelText('The label')`)
  * @param option The display name for the option to type and select
- * @param createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
+ * @param config Optional config options
+ * @param config.container A container for the react-select and its dropdown (defaults to the react-select container)
+ *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
+ * @param config.createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
 export const create = async (
   input: HTMLElement,
   option: string,
-  createOptionText: string | RegExp = /^Create "/
+  config: CreateConfig = {}
 ) => {
+  const createOptionText = config.createOptionText || /^Create "/;
   focus(input);
   type(input, option);
 
   fireEvent.change(input, { target: { value: option } });
-  await select(input, createOptionText);
+  await select(input, createOptionText, config);
 
   await findByText(getReactSelectContainerFromInput(input), option);
 };
