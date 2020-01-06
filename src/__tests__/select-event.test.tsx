@@ -35,12 +35,12 @@ const defaultProps = { options: OPTIONS, name: "food", inputId: "food" };
 
 const renderForm = (select: React.ReactNode) => {
   const result = render(
-    <form data-testid="form">
+    <form>
       <label htmlFor="food">Food</label>
       {select}
     </form>
   );
-  const form = result.getByTestId("form");
+  const form = result.getByRole("form");
   const input = result.getByLabelText("Food");
   return { ...result, form, input };
 };
