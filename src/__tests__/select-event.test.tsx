@@ -45,6 +45,22 @@ const renderForm = (select: React.ReactNode) => {
   return { ...result, form, input };
 };
 
+describe("The openMenu event helper", () => {
+  it("opens the menu", () => {
+    const { getByLabelText, queryByText } = render(
+      <form>
+        <label htmlFor="food">Food</label>
+        <Select {...defaultProps} />
+      </form>
+    );
+    // option is not yet visible
+    expect(queryByText("Chocolate")).toBeNull();
+    selectEvent.openMenu(getByLabelText("Food"));
+    // option can now be seen because menu is open
+    expect(queryByText("Chocolate")).toBeInTheDocument();
+  });
+});
+
 describe("The select event helpers", () => {
   it("selects an option in a single-option input", async () => {
     const { form, input } = renderForm(<Select {...defaultProps} />);

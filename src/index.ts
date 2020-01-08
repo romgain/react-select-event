@@ -125,4 +125,4 @@ export const clearAll = async (input: HTMLElement) => {
   await clear(input, clearAllButton);
 };
 
-export default { select, create, clearFirst, clearAll };
+export default { select, create, clearFirst, clearAll, openMenu };
