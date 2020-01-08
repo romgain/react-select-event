@@ -46,7 +46,7 @@ const renderForm = (select: React.ReactNode) => {
 };
 
 describe("The openMenu event helper", () => {
-  it("opens the menu", async () => {
+  it("opens the menu", () => {
     const { getByLabelText, queryByText } = render(
       <form>
         <label htmlFor="food">Food</label>
@@ -55,7 +55,7 @@ describe("The openMenu event helper", () => {
     );
     // option is not yet visible
     expect(queryByText("Chocolate")).toBeNull();
-    await selectEvent.openMenu(getByLabelText("Food"));
+    selectEvent.openMenu(getByLabelText("Food"));
     // option can now be seen because menu is open
     expect(queryByText("Chocolate")).toBeInTheDocument();
   });
