@@ -43,19 +43,19 @@ Every helper exported by `react-select-event` takes a handle on the `react-selec
 Select one or more values in a react-select dropdown.
 
 ```jsx
-const { getByTestId, getByLabelText } = render(
-  <form data-testid="form">
+const { getByRole, getByLabelText } = render(
+  <form>
     <label htmlFor="food">Food</label>
     <Select options={OPTIONS} name="food" inputId="food" isMulti />
   </form>
 );
-expect(getByTestId("form")).toHaveFormValues({ food: "" });
+expect(getByRole("form")).toHaveFormValues({ food: "" });
 
 await selectEvent.select(getByLabelText("Food"), ["Strawberry", "Mango"]);
-expect(getByTestId("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
+expect(getByRole("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
 
 await selectEvent.select(getByLabelText("Food"), "Chocolate");
-expect(getByTestId("form")).toHaveFormValues({
+expect(getByRole("form")).toHaveFormValues({
   food: ["strawberry", "mango", "chocolate"]
 });
 ```
@@ -63,8 +63,8 @@ expect(getByTestId("form")).toHaveFormValues({
 This also works for [async selects](https://react-select.com/async):
 
 ```jsx
-const { getByTestId, getByLabelText } = render(
-  <form data-testid="form">
+const { getByRole, getByLabelText } = render(
+  <form>
     <label htmlFor="food">Food</label>
     <Async
       options={[]}
@@ -75,12 +75,12 @@ const { getByTestId, getByLabelText } = render(
     />
   </form>
 );
-expect(getByTestId("form")).toHaveFormValues({ food: "" });
+expect(getByRole("form")).toHaveFormValues({ food: "" });
 
 // start typing to trigger the `loadOptions`
 fireEvent.change(getByLabelText("Food"), { target: { value: "Choc" } });
 await selectEvent.select(getByLabelText("Food"), "Chocolate");
-expect(getByTestId("form")).toHaveFormValues({
+expect(getByRole("form")).toHaveFormValues({
   food: ["chocolate"]
 });
 ```
@@ -90,8 +90,8 @@ expect(getByTestId("form")).toHaveFormValues({
 in a portal using `menuPortalTarget`:
 
 ```jsx
-const { getByTestId, getByLabelText } = render(
-  <form data-testid="form">
+const { getByRole, getByLabelText } = render(
+  <form>
     <label htmlFor="food">Food</label>
     <Select
       options={OPTIONS}
@@ -105,7 +105,7 @@ const { getByTestId, getByLabelText } = render(
 await selectEvent.select(getByLabelText("Food"), ["Strawberry", "Mango"], {
   container: document.body
 });
-expect(getByTestId("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
+expect(getByRole("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
 ```
 
 ### `create(input: HTMLElement, option: string, config?: object): Promise<void> }`
@@ -113,15 +113,15 @@ expect(getByTestId("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
 Creates and selects a new item. Only applicable to `react-select` [`Creatable`](https://react-select.com/creatable) elements.
 
 ```jsx
-const { getByTestId, getByLabelText } = render(
-  <form data-testid="form">
+const { getByRole, getByLabelText } = render(
+  <form>
     <label htmlFor="food">Food</label>
     <Creatable options={OPTIONS} name="food" inputId="food" />
   </form>
 );
-expect(getByTestId("form")).toHaveFormValues({ food: "" });
+expect(getByRole("form")).toHaveFormValues({ food: "" });
 await selectEvent.create(getByLabelText("Food"), "papaya");
-expect(getByTestId("form")).toHaveFormValues({ food: "papaya" });
+expect(getByRole("form")).toHaveFormValues({ food: "papaya" });
 ```
 
 `create` take an optional `config` parameter:
@@ -134,8 +134,8 @@ expect(getByTestId("form")).toHaveFormValues({ food: "papaya" });
 Clears the first value in the dropdown.
 
 ```jsx
-const { getByTestId, getByLabelText } = render(
-  <form data-testid="form">
+const { getByRole, getByLabelText } = render(
+  <form>
     <label htmlFor="food">Food</label>
     <Creatable
       defaultValue={OPTIONS[0]}
@@ -146,9 +146,9 @@ const { getByTestId, getByLabelText } = render(
     />
   </form>
 );
-expect(getByTestId("form")).toHaveFormValues({ food: "chocolate" });
+expect(getByRole("form")).toHaveFormValues({ food: "chocolate" });
 await selectEvent.clearFirst(getByLabelText("Food"));
-expect(getByTestId("form")).toHaveFormValues({ food: "" });
+expect(getByRole("form")).toHaveFormValues({ food: "" });
 ```
 
 ### `clearAll(input: HTMLElement): Promise<void>`
@@ -156,8 +156,8 @@ expect(getByTestId("form")).toHaveFormValues({ food: "" });
 Clears all values in the dropdown.
 
 ```jsx
-const { getByTestId, getByLabelText } = render(
-  <form data-testid="form">
+const { getByRole, getByLabelText } = render(
+  <form>
     <label htmlFor="food">Food</label>
     <Creatable
       defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
@@ -168,11 +168,27 @@ const { getByTestId, getByLabelText } = render(
     />
   </form>
 );
-expect(getByTestId("form")).toHaveFormValues({
+expect(getByRole("form")).toHaveFormValues({
   food: ["chocolate", "vanilla", "strawberry"]
 });
 await selectEvent.clearAll(getByLabelText("Food"));
-expect(getByTestId("form")).toHaveFormValues({ food: "" });
+expect(getByRole("form")).toHaveFormValues({ food: "" });
+```
+
+### `openMenu(input: HTMLElement): void`
+
+Opens the select dropdown menu by focusing the input and simulating a down arrow keypress.
+
+```jsx
+const { getByLabelText, queryByText } = render(
+  <form>
+    <label htmlFor="food">Food</label>
+    <Select options={[{ label: "Pizza", value: 1 }]} />
+  </form>
+);
+expect(queryByText("Pizza")).toBeNull();
+await selectEvent.openMenu(getByLabelText("Food"));
+expect(queryByText("Pizza")).toBeInTheDocument();
 ```
 
 ## Credits

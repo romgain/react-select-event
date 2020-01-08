@@ -8,8 +8,11 @@ function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
     .parentNode as HTMLElement;
 }
 
-// focus the `react-select` input field
-const focus = (input: HTMLElement) => {
+/**
+ * Utility for opening the select's dropdown menu.
+ * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
+ */
+export const openMenu = (input: HTMLElement) => {
   fireEvent.focus(input);
   fireEvent.keyDown(input, {
     key: "ArrowDown",
@@ -41,10 +44,10 @@ interface Config {
 
 /**
  * Utility for selecting a value in a `react-select` dropdown.
- * @param input The input field (eg. `getByLabelText('The label')`)
- * @param optionOrOptions The display name(s) for the option(s) to select
- * @param config Optional config options
- * @param config.container A container for the react-select and its dropdown (defaults to the react-select container)
+ * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
+ * @param {String|RegExp|String[]|RegExp[]} optionOrOptions The display name(s) for the option(s) to select
+ * @param {Object} config Optional config options
+ * @param {HTMLElement} config.container A container for the react-select and its dropdown (defaults to the react-select container)
  *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
  */
 export const select = async (
@@ -59,7 +62,7 @@ export const select = async (
 
   // Select the items we care about
   for (const option of options) {
-    focus(input);
+    openMenu(input);
 
     // only consider accessible elements
     const optionElement = await findByText(container, option, {
@@ -76,12 +79,12 @@ interface CreateConfig extends Config {
 /**
  * Utility for creating and selecting a value in a Creatable `react-select` dropdown.
  * @async
- * @param input The input field (eg. `getByLabelText('The label')`)
- * @param option The display name for the option to type and select
- * @param config Optional config options
- * @param config.container A container for the react-select and its dropdown (defaults to the react-select container)
+ * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
+ * @param {String} option The display name for the option to type and select
+ * @param {Object} config Optional config options
+ * @param {HTMLElement} config.container A container for the react-select and its dropdown (defaults to the react-select container)
  *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
- * @param config.createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
+ * @param {String|RegExp} config.createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
 export const create = async (
   input: HTMLElement,
@@ -89,7 +92,7 @@ export const create = async (
   config: CreateConfig = {}
 ) => {
   const createOptionText = config.createOptionText || /^Create "/;
-  focus(input);
+  openMenu(input);
   type(input, option);
 
   fireEvent.change(input, { target: { value: option } });
@@ -100,7 +103,7 @@ export const create = async (
 
 /**
  * Utility for clearing the first value of a `react-select` dropdown.
- * @param input The input field (eg. `getByLabelText('The label')`)
+ * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  */
 export const clearFirst = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
@@ -111,7 +114,7 @@ export const clearFirst = async (input: HTMLElement) => {
 
 /**
  * Utility for clearing all values in a `react-select` dropdown.
- * @param input The input field (eg. `getByLabelText('The label')`)
+ * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  */
 export const clearAll = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
