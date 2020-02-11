@@ -64,10 +64,10 @@ export const select = async (
   for (const option of options) {
     openMenu(input);
 
-    // only consider accessible elements
+    // only consider visible, interactive elements
     const optionElement = await findByText(container, option, {
       // @ts-ignore invalid rtl types :'(
-      ignore: ":not([tabindex])"
+      ignore: "[aria-live] *,[style*='visibility: hidden']"
     });
     fireEvent.click(optionElement);
   }

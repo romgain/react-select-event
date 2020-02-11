@@ -87,6 +87,18 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
   });
 
+  it("selects an option in a custom dropdown", async () => {
+    const { form, input } = renderForm(
+      <Select
+        {...defaultProps}
+        formatOptionLabel={({ label }) => <div>This is a {label}</div>}
+      />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, /Chocolate/);
+    expect(form).toHaveFormValues({ food: "chocolate" });
+  });
+
   it("types in and adds a new option", async () => {
     const { form, input } = renderForm(<Creatable {...defaultProps} />);
     expect(form).toHaveFormValues({ food: "" });
