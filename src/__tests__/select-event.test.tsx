@@ -69,6 +69,15 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "chocolate" });
   });
 
+  it("re-selects an option in a single-option input", async () => {
+    const { form, input } = renderForm(<Select {...defaultProps} />);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, "Chocolate");
+    await selectEvent.select(input, "Chocolate");
+    await selectEvent.select(input, "Chocolate");
+    expect(form).toHaveFormValues({ food: "chocolate" });
+  });
+
   it("selects several options in a multi-options input", async () => {
     const { form, input } = renderForm(<Select {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
@@ -84,6 +93,15 @@ describe("The select event helpers", () => {
     const { form, input } = renderForm(<Select {...defaultProps} isMulti />);
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.select(input, ["Strawberry", "Mango"]);
+    expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
+  });
+
+  it("selects several duplicated options", async () => {
+    const { form, input } = renderForm(<Select {...defaultProps} isMulti />);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, ["Strawberry", "Mango", "Strawberry"]);
+    expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
+    await selectEvent.select(input, ["Mango"]);
     expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
   });
 

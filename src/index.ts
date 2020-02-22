@@ -1,6 +1,11 @@
 /** Simulate user events on react-select dropdowns */
 
-import { fireEvent, findByText, wait } from "@testing-library/dom";
+import {
+  fireEvent,
+  findByText,
+  findAllByText,
+  wait
+} from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
@@ -65,10 +70,15 @@ export const select = async (
     openMenu(input);
 
     // only consider visible, interactive elements
-    const optionElement = await findByText(container, option, {
+    const matchingElements = await findAllByText(container, option, {
       // @ts-ignore invalid rtl types :'(
       ignore: "[aria-live] *,[style*='visibility: hidden']"
     });
+
+    // When the target option is already selected, the react-select display text
+    // will also match the selector. In this case, the actual dropdown element is
+    // positionned last in the DOM tree.
+    const optionElement = matchingElements[matchingElements.length - 1];
     fireEvent.click(optionElement);
   }
 };
