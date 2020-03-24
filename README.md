@@ -44,7 +44,7 @@ Select one or more values in a react-select dropdown.
 
 ```jsx
 const { getByRole, getByLabelText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Select options={OPTIONS} name="food" inputId="food" isMulti />
   </form>
@@ -64,7 +64,7 @@ This also works for [async selects](https://react-select.com/async):
 
 ```jsx
 const { getByRole, getByLabelText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Async
       options={[]}
@@ -91,7 +91,7 @@ in a portal using `menuPortalTarget`:
 
 ```jsx
 const { getByRole, getByLabelText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Select
       options={OPTIONS}
@@ -114,7 +114,7 @@ Creates and selects a new item. Only applicable to `react-select` [`Creatable`](
 
 ```jsx
 const { getByRole, getByLabelText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Creatable options={OPTIONS} name="food" inputId="food" />
   </form>
@@ -135,7 +135,7 @@ Clears the first value in the dropdown.
 
 ```jsx
 const { getByRole, getByLabelText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Creatable
       defaultValue={OPTIONS[0]}
@@ -157,7 +157,7 @@ Clears all values in the dropdown.
 
 ```jsx
 const { getByRole, getByLabelText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Creatable
       defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
@@ -181,7 +181,7 @@ Opens the select dropdown menu by focusing the input and simulating a down arrow
 
 ```jsx
 const { getByLabelText, queryByText } = render(
-  <form>
+  <form role="form">
     <label htmlFor="food">Food</label>
     <Select options={[{ label: "Pizza", value: 1 }]} />
   </form>
