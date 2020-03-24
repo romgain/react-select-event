@@ -56,7 +56,7 @@ expect(getByRole("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
 
 await selectEvent.select(getByLabelText("Food"), "Chocolate");
 expect(getByRole("form")).toHaveFormValues({
-  food: ["strawberry", "mango", "chocolate"]
+  food: ["strawberry", "mango", "chocolate"],
 });
 ```
 
@@ -81,7 +81,7 @@ expect(getByRole("form")).toHaveFormValues({ food: "" });
 fireEvent.change(getByLabelText("Food"), { target: { value: "Choc" } });
 await selectEvent.select(getByLabelText("Food"), "Chocolate");
 expect(getByRole("form")).toHaveFormValues({
-  food: ["chocolate"]
+  food: ["chocolate"],
 });
 ```
 
@@ -103,7 +103,7 @@ const { getByRole, getByLabelText } = render(
   </form>
 );
 await selectEvent.select(getByLabelText("Food"), ["Strawberry", "Mango"], {
-  container: document.body
+  container: document.body,
 });
 expect(getByRole("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
 ```
@@ -169,7 +169,7 @@ const { getByRole, getByLabelText } = render(
   </form>
 );
 expect(getByRole("form")).toHaveFormValues({
-  food: ["chocolate", "vanilla", "strawberry"]
+  food: ["chocolate", "vanilla", "strawberry"],
 });
 await selectEvent.clearAll(getByLabelText("Food"));
 expect(getByRole("form")).toHaveFormValues({ food: "" });

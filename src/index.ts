@@ -4,7 +4,7 @@ import {
   fireEvent,
   findByText,
   findAllByText,
-  wait
+  wait,
 } from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
@@ -22,7 +22,7 @@ export const openMenu = (input: HTMLElement) => {
   fireEvent.keyDown(input, {
     key: "ArrowDown",
     keyCode: 40,
-    code: 40
+    code: 40,
   });
 };
 
@@ -72,7 +72,7 @@ export const select = async (
     // only consider visible, interactive elements
     const matchingElements = await findAllByText(container, option, {
       // @ts-ignore invalid rtl types :'(
-      ignore: "[aria-live] *,[style*='visibility: hidden']"
+      ignore: "[aria-live] *,[style*='visibility: hidden']",
     });
 
     // When the target option is already selected, the react-select display text
