@@ -29,7 +29,7 @@ const OPTIONS: Options = [
   { label: "Chocolate", value: "chocolate" },
   { label: "Vanilla", value: "vanilla" },
   { label: "Strawberry", value: "strawberry" },
-  { label: "Mango", value: "mango" }
+  { label: "Mango", value: "mango" },
 ];
 const defaultProps = { options: OPTIONS, name: "food", inputId: "food" };
 
@@ -131,7 +131,7 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "" });
 
     await selectEvent.create(input, "papaya", {
-      createOptionText: "Add new option"
+      createOptionText: "Add new option",
     });
 
     expect(form).toHaveFormValues({ food: "papaya" });
@@ -207,7 +207,7 @@ describe("The select event helpers", () => {
       />
     );
     expect(form).toHaveFormValues({
-      food: ["chocolate", "vanilla", "strawberry"]
+      food: ["chocolate", "vanilla", "strawberry"],
     });
 
     await selectEvent.clearFirst(input);
@@ -255,7 +255,7 @@ describe("The select event helpers", () => {
       />
     );
     expect(form).toHaveFormValues({
-      food: ["chocolate", "vanilla", "strawberry"]
+      food: ["chocolate", "vanilla", "strawberry"],
     });
 
     await selectEvent.clearAll(input);
@@ -271,7 +271,7 @@ describe("The select event helpers", () => {
       />
     );
     expect(form).toHaveFormValues({
-      food: ["chocolate", "vanilla", "strawberry"]
+      food: ["chocolate", "vanilla", "strawberry"],
     });
 
     await selectEvent.clearAll(input);
@@ -286,7 +286,7 @@ describe("The select event helpers", () => {
     type State = { options: Options; value: Option | void; isLoading: boolean };
 
     const filterOptions = (options: Options, inputValue: string) => {
-      return options.filter(i =>
+      return options.filter((i) =>
         i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
     };
@@ -295,7 +295,7 @@ describe("The select event helpers", () => {
       state = { isLoading: false, options: OPTIONS, value: undefined };
 
       handlePromiseOptions = (inputValue: string) =>
-        new Promise(resolve => {
+        new Promise((resolve) => {
           setTimeout(() => {
             resolve(filterOptions(this.state.options, inputValue));
           }, 5);
@@ -311,7 +311,7 @@ describe("The select event helpers", () => {
           this.setState({
             isLoading: false,
             options: [...options, newOption],
-            value: newOption
+            value: newOption,
           });
         }, 5);
       };
@@ -363,7 +363,7 @@ describe("The select event helpers", () => {
       );
       expect(form).toHaveFormValues({ food: "" });
       await selectEvent.select(input, "Chocolate", {
-        container: document.body
+        container: document.body,
       });
       expect(form).toHaveFormValues({ food: "chocolate" });
     });
@@ -387,7 +387,7 @@ describe("The select event helpers", () => {
         />
       );
       expect(form).toHaveFormValues({
-        food: ["chocolate", "vanilla", "strawberry"]
+        food: ["chocolate", "vanilla", "strawberry"],
       });
 
       await selectEvent.clearFirst(input);
@@ -404,7 +404,7 @@ describe("The select event helpers", () => {
         />
       );
       expect(form).toHaveFormValues({
-        food: ["chocolate", "vanilla", "strawberry"]
+        food: ["chocolate", "vanilla", "strawberry"],
       });
 
       await selectEvent.clearAll(input);
