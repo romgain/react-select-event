@@ -4,7 +4,7 @@ import {
   fireEvent,
   findByText,
   findAllByText,
-  wait,
+  waitFor,
 } from "@testing-library/dom";
 
 // find the react-select container from its input field 🤷
@@ -36,7 +36,7 @@ const clear = async (input: HTMLElement, clearButton: Element) => {
   fireEvent.mouseDown(clearButton);
   fireEvent.click(clearButton);
   // react-select will prevent the menu from opening, and asynchronously focus the select field...
-  await wait();
+  await waitFor(() => {});
   input.blur();
 };
 

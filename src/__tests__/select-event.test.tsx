@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/extend-expect";
 import React from "react";
-import { render, wait, fireEvent } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import Select from "react-select";
 import selectEvent from "..";
 let Async: any;
@@ -35,7 +35,7 @@ const defaultProps = { options: OPTIONS, name: "food", inputId: "food" };
 
 const renderForm = (select: React.ReactNode) => {
   const result = render(
-    <form>
+    <form role="form">
       <label htmlFor="food">Food</label>
       {select}
     </form>
@@ -334,23 +334,23 @@ describe("The select event helpers", () => {
     }
 
     it("types in and adds a new option when having similar options", async () => {
-      const { form, input } = renderForm(
+      const { form, input, findByDisplayValue } = renderForm(
         <CreatableAdvanced {...defaultProps} />
       );
 
       await selectEvent.create(input, "Choco");
-      await wait();
+      await findByDisplayValue("Choco");
 
       expect(form).toHaveFormValues({ food: "Choco" });
     });
 
     it("types in and adds a new option when not having similar options", async () => {
-      const { form, input } = renderForm(
+      const { form, input, findByDisplayValue } = renderForm(
         <CreatableAdvanced {...defaultProps} />
       );
 
       await selectEvent.create(input, "papaya");
-      await wait();
+      await findByDisplayValue("papaya");
 
       expect(form).toHaveFormValues({ food: "papaya" });
     });
