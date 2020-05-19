@@ -1,16 +1,14 @@
 .babelrc
-.git
 .gitignore
 .npmignore
-.npmrc
 .prettierrc
 .tav.yml
 .travis.yml
 *.tgz
 coverage
 jest.config.js
-node_modules
 other
 rollup.config.js
+src
 tsconfig.build.json
 tsconfig.json
