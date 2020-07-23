@@ -344,12 +344,11 @@ describe("The select event helpers", () => {
     }
 
     it("types in and adds a new option when having similar options", async () => {
-      const { form, input, findByDisplayValue } = renderForm(
+      const { form, input } = renderForm(
         <CreatableAdvanced {...defaultProps} />
       );
 
       await selectEvent.create(input, "Choco");
-
       expect(form).toHaveFormValues({ food: "Choco" });
     });
 
