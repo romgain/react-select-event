@@ -1,9 +1,9 @@
 /** Simulate user events on react-select dropdowns */
 
 import {
-  fireEvent,
-  findByText,
   findAllByText,
+  findByText,
+  fireEvent,
   waitFor,
 } from "@testing-library/dom";
 
@@ -84,6 +84,7 @@ export const select = async (
 };
 
 interface CreateConfig extends Config {
+  autoSelect?: boolean;
   createOptionText?: string | RegExp;
 }
 /**
@@ -94,21 +95,24 @@ interface CreateConfig extends Config {
  * @param {Object} config Optional config options
  * @param {HTMLElement} config.container A container for the react-select and its dropdown (defaults to the react-select container)
  *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
+ * @param {boolean} config.autoSelect Whether to automatically select the newly created option or not
  * @param {String|RegExp} config.createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
 export const create = async (
   input: HTMLElement,
   option: string,
-  config: CreateConfig = {}
+  { autoSelect = true, ...config }: CreateConfig = {}
 ) => {
   const createOptionText = config.createOptionText || /^Create "/;
   openMenu(input);
   type(input, option);
 
   fireEvent.change(input, { target: { value: option } });
-  await select(input, createOptionText, config);
 
-  await findByText(getReactSelectContainerFromInput(input), option);
+  if (autoSelect) {
+    await select(input, createOptionText, config);
+    await findByText(getReactSelectContainerFromInput(input), option);
+  }
 };
 
 /**

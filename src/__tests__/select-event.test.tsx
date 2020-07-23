@@ -1,8 +1,11 @@
 import "@testing-library/jest-dom/extend-expect";
+
+import { fireEvent, render } from "@testing-library/react";
+
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
 import Select from "react-select";
 import selectEvent from "..";
+
 let Async: any;
 let Creatable: any;
 let AsyncCreatable: any;
@@ -122,6 +125,13 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.create(input, "papaya");
     expect(form).toHaveFormValues({ food: "papaya" });
+  });
+
+  it("types in and adds a new option but does not select it by default", async () => {
+    const { form, input } = renderForm(<Creatable {...defaultProps} />);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.create(input, "papaya", { autoSelect: false });
+    expect(form).toHaveFormValues({ food: "" });
   });
 
   it("types in and adds a new option with custom create label when searching by fixed string", async () => {
@@ -375,6 +385,18 @@ describe("The select event helpers", () => {
       expect(form).toHaveFormValues({ food: "" });
       await selectEvent.create(input, "papaya", { container: document.body });
       expect(form).toHaveFormValues({ food: "papaya" });
+    });
+
+    it("types in and adds a new option but does not select it by default", async () => {
+      const { form, input } = renderForm(
+        <Creatable {...defaultProps} menuPortalTarget={document.body} />
+      );
+      expect(form).toHaveFormValues({ food: "" });
+      await selectEvent.create(input, "papaya", {
+        autoSelect: false,
+        container: document.body,
+      });
+      expect(form).toHaveFormValues({ food: "" });
     });
 
     it("clears the first item in a multi-select dropdown", async () => {
