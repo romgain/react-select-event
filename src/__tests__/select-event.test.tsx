@@ -349,7 +349,6 @@ describe("The select event helpers", () => {
       );
 
       await selectEvent.create(input, "Choco");
-      await findByDisplayValue("Choco");
 
       expect(form).toHaveFormValues({ food: "Choco" });
     });
