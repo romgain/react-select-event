@@ -127,8 +127,8 @@ expect(getByRole("form")).toHaveFormValues({ food: "papaya" });
 `create` take an optional `config` parameter:
 
 - `config.createOptionText` can be used when [creating elements with a custom label text, using the `formatCreateLabel` prop](https://react-select.com/props#creatable-props).
-- `config.autoSelect` is used to automatically select the newly created option, it defaults to `true`.
 - `config.container` can be used when the `react-select` dropdown is rendered in a portal using `menuPortalTarget`.
+- `config.waitForElement` Whether `create` should wait for new option to be populated in the select container. Defaults to `true`.
 
 ### `clearFirst(input: HTMLElement): Promise<void>`
 
