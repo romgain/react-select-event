@@ -127,11 +127,11 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "papaya" });
   });
 
-  it("types in and adds a new option but does not select it by default", async () => {
+  it("types in and adds a new option but does not wait for it", async () => {
     const { form, input } = renderForm(<Creatable {...defaultProps} />);
     expect(form).toHaveFormValues({ food: "" });
-    await selectEvent.create(input, "papaya", { autoSelect: false });
-    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.create(input, "papaya", { waitForElement: false });
+    expect(form).toHaveFormValues({ food: "papaya" });
   });
 
   it("types in and adds a new option with custom create label when searching by fixed string", async () => {
@@ -383,18 +383,6 @@ describe("The select event helpers", () => {
       expect(form).toHaveFormValues({ food: "" });
       await selectEvent.create(input, "papaya", { container: document.body });
       expect(form).toHaveFormValues({ food: "papaya" });
-    });
-
-    it("types in and adds a new option but does not select it by default", async () => {
-      const { form, input } = renderForm(
-        <Creatable {...defaultProps} menuPortalTarget={document.body} />
-      );
-      expect(form).toHaveFormValues({ food: "" });
-      await selectEvent.create(input, "papaya", {
-        autoSelect: false,
-        container: document.body,
-      });
-      expect(form).toHaveFormValues({ food: "" });
     });
 
     it("clears the first item in a multi-select dropdown", async () => {

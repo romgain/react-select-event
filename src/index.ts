@@ -84,8 +84,8 @@ export const select = async (
 };
 
 interface CreateConfig extends Config {
-  autoSelect?: boolean;
   createOptionText?: string | RegExp;
+  waitForElement?: boolean;
 }
 /**
  * Utility for creating and selecting a value in a Creatable `react-select` dropdown.
@@ -95,13 +95,13 @@ interface CreateConfig extends Config {
  * @param {Object} config Optional config options
  * @param {HTMLElement} config.container A container for the react-select and its dropdown (defaults to the react-select container)
  *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
- * @param {boolean} config.autoSelect Whether to automatically select the newly created option or not
+ * @param {boolean} config.waitForElement Whether create should wait for new option to be populated in the select container
  * @param {String|RegExp} config.createOptionText Custom label for the "create new ..." option in the menu (string or regexp)
  */
 export const create = async (
   input: HTMLElement,
   option: string,
-  { autoSelect = true, ...config }: CreateConfig = {}
+  { waitForElement = true, ...config }: CreateConfig = {}
 ) => {
   const createOptionText = config.createOptionText || /^Create "/;
   openMenu(input);
@@ -109,8 +109,9 @@ export const create = async (
 
   fireEvent.change(input, { target: { value: option } });
 
-  if (autoSelect) {
-    await select(input, createOptionText, config);
+  await select(input, createOptionText, config);
+
+  if (waitForElement) {
     await findByText(getReactSelectContainerFromInput(input), option);
   }
 };
