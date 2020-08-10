@@ -182,13 +182,13 @@ Opens the select dropdown menu by focusing the input and simulating a down arrow
 
 ```jsx
 const { getByLabelText, queryByText } = render(
-  <form role="form">
+  <form>
     <label htmlFor="food">Food</label>
-    <Select options={[{ label: "Pizza", value: 1 }]} />
+    <Select options={[{ label: "Pizza", value: 1 }]} inputId="food" />
   </form>
 );
 expect(queryByText("Pizza")).toBeNull();
-await selectEvent.openMenu(getByLabelText("Food"));
+selectEvent.openMenu(getByLabelText("Food"));
 expect(queryByText("Pizza")).toBeInTheDocument();
 ```
 
