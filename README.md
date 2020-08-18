@@ -189,7 +189,7 @@ const { getByLabelText, queryByText } = render(
 );
 expect(queryByText("Pizza")).toBeNull();
 selectEvent.openMenu(getByLabelText("Food"));
-expect(queryByText("Pizza")).toBeInTheDocument();
+expect(getByText("Pizza")).toBeInTheDocument();
 ```
 
 ## Credits
