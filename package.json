@@ -1,6 +1,6 @@
 {
   "name": "react-select-event",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Simulate react-select events for react-testing-library",
   "main": "lib/react-select-event.cjs.js",
   "module": "lib/react-select-event.es.js",
