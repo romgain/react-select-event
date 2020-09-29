@@ -6,6 +6,7 @@ import {
   fireEvent,
   waitFor,
 } from "@testing-library/dom";
+import act from "./act-compat";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
@@ -33,11 +34,13 @@ const type = (input: HTMLElement, text: string) => {
 
 // press the "clear" button, and reset various states
 const clear = async (input: HTMLElement, clearButton: Element) => {
-  fireEvent.mouseDown(clearButton);
-  fireEvent.click(clearButton);
-  // react-select will prevent the menu from opening, and asynchronously focus the select field...
-  await waitFor(() => {});
-  input.blur();
+  await act(async () => {
+    fireEvent.mouseDown(clearButton);
+    fireEvent.click(clearButton);
+    // react-select will prevent the menu from opening, and asynchronously focus the select field...
+    await waitFor(() => {});
+    input.blur();
+  });
 };
 
 interface Config {
@@ -65,22 +68,24 @@ export const select = async (
     : [optionOrOptions];
   const container = config.container || getReactSelectContainerFromInput(input);
 
-  // Select the items we care about
-  for (const option of options) {
-    openMenu(input);
+  await act(async () => {
+    // Select the items we care about
+    for (const option of options) {
+      openMenu(input);
 
-    // only consider visible, interactive elements
-    const matchingElements = await findAllByText(container, option, {
-      // @ts-ignore invalid rtl types :'(
-      ignore: "[aria-live] *,[style*='visibility: hidden']",
-    });
+      // only consider visible, interactive elements
+      const matchingElements = await findAllByText(container, option, {
+        // @ts-ignore invalid rtl types :'(
+        ignore: "[aria-live] *,[style*='visibility: hidden']",
+      });
 
-    // When the target option is already selected, the react-select display text
-    // will also match the selector. In this case, the actual dropdown element is
-    // positionned last in the DOM tree.
-    const optionElement = matchingElements[matchingElements.length - 1];
-    fireEvent.click(optionElement);
-  }
+      // When the target option is already selected, the react-select display text
+      // will also match the selector. In this case, the actual dropdown element is
+      // positionned last in the DOM tree.
+      const optionElement = matchingElements[matchingElements.length - 1];
+      fireEvent.click(optionElement);
+    }
+  });
 };
 
 interface CreateConfig extends Config {
