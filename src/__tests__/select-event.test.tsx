@@ -306,7 +306,6 @@ describe("The select event helpers", () => {
       </form>
     );
     const form = getByRole("form");
-    // const mondayInput = result.getByLabelText("Food for monday");
     const mondayInput = container.querySelector('input[name="foodForMonday"]')
     const tuesdayInput = container.querySelector('input[name="foodForTuesday"]')
 
