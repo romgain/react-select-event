@@ -290,6 +290,32 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "vanilla" });
   });
 
+  it("selects options when there are multiple dropdowns", async () => {
+    const {container, getByRole} = render(
+      <form role="form">
+        <label htmlFor="food-for-monday">Food for monday</label>
+        <Select
+          options={OPTIONS} name="foodForMonday" inputId="food-for-monday"
+          formatOptionLabel={({ label }) => <div>This is a {label}</div>}
+        />
+        <label htmlFor="food-for-tuesday">Food for tuesday</label>
+        <Select
+          options={OPTIONS} name="foodForTuesday" inputId="food-for-tuesday"
+          formatOptionLabel={({ label }) => <div>This is a {label}</div>}
+        />
+      </form>
+    );
+    const form = getByRole("form");
+    // const mondayInput = result.getByLabelText("Food for monday");
+    const mondayInput = container.querySelector('input[name="foodForMonday"]')
+    const tuesdayInput = container.querySelector('input[name="foodForTuesday"]')
+
+    expect(form).toHaveFormValues({ foodForMonday: "", foodForTuesday: "" });
+    await selectEvent.select(mondayInput, /Chocolate/);
+    await selectEvent.select(tuesdayInput, /Chocolate/);
+    expect(form).toHaveFormValues({ foodForMonday: "chocolate", foodForTuesday: "chocolate" });
+  });
+
   describe("when asynchronously generating the list of options", () => {
     // from https://github.com/JedWatson/react-select/blob/v3.0.0/docs/examples/CreatableAdvanced.js
     // mixed with Async Creatable Example from https://react-select.com/creatable
