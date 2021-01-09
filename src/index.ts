@@ -129,7 +129,7 @@ export const clearFirst = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
   // The "clear" button is constructed from the user-defined `${classNamePrefix}__multi-value__remove`.
   // This is built from the internal util `cx` of react-select, so we take advantage of the attribute selector here.
-  const clearButton = container.querySelector('[class$="multi-value__remove"]')!;
+  const clearButton = container.querySelector('[class*="multi-value__remove"]')!;
   await clear(input, clearButton);
 };
 
