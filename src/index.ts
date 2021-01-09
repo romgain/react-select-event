@@ -127,8 +127,9 @@ export const create = async (
  */
 export const clearFirst = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
-  // The "clear" button is the first svg element that is hidden to screen readers
-  const clearButton = container.querySelector('svg[aria-hidden="true"]')!;
+  // The "clear" button is constructed from the user-defined `${classNamePrefix}__multi-value__remove`.
+  // This is built from the internal util `cx` of react-select, so we take advantage of the attribute selector here.
+  const clearButton = container.querySelector('[class$="multi-value__remove"]')!;
   await clear(input, clearButton);
 };
 
@@ -138,10 +139,9 @@ export const clearFirst = async (input: HTMLElement) => {
  */
 export const clearAll = async (input: HTMLElement) => {
   const container = getReactSelectContainerFromInput(input);
-  // The "clear all" button is the penultimate svg element that is hidden to screen readers
-  // (the last one is the dropdown arrow)
-  const elements = container.querySelectorAll('svg[aria-hidden="true"]');
-  const clearAllButton = elements[elements.length - 2];
+  // The "clear all" button is constructed from the user-defined `${classNamePrefix}__multi-value__remove`.
+  // This is built from the internal util `cx` of react-select, so we take advantage of the attribute selector here.
+  const clearAllButton = container.querySelector('[class*="clear-indicator"]')!;
   await clear(input, clearAllButton);
 };
 
