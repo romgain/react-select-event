@@ -47,7 +47,7 @@ interface Config {
   /** A container where the react-select dropdown gets rendered to.
    *  Useful when rendering the dropdown in a portal using `menuPortalTarget`.
    */
-  container?: HTMLElement;
+  container?: HTMLElement | (() => HTMLElement);
 }
 
 /**
@@ -55,8 +55,9 @@ interface Config {
  * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  * @param {String|RegExp|String[]|RegExp[]} optionOrOptions The display name(s) for the option(s) to select
  * @param {Object} config Optional config options
- * @param {HTMLElement} config.container A container for the react-select and its dropdown (defaults to the react-select container)
- *                         Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`
+ * @param {HTMLElement | (() => HTMLElement)} config.container A container for the react-select and its dropdown (defaults to the react-select container)
+ *            Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`.
+ *            Can be specified as a function if it needs to be lazily evaluated.
  */
 export const select = async (
   input: HTMLElement,
@@ -66,13 +67,23 @@ export const select = async (
   const options = Array.isArray(optionOrOptions)
     ? optionOrOptions
     : [optionOrOptions];
-  const container = config.container || getReactSelectContainerFromInput(input);
 
   await act(async () => {
     // Select the items we care about
     for (const option of options) {
       openMenu(input);
 
+      let container;
+      if (typeof config.container === "function") {
+        // when specified as a function, the container needs to be lazily evaluated, so
+        // we have to wait for it to be visible:
+        await waitFor(config.container);
+        container = config.container();
+      } else if (config.container) {
+        container = config.container;
+      } else {
+        container = getReactSelectContainerFromInput(input);
+      }
       // only consider visible, interactive elements
       const matchingElements = await findAllByText(container, option, {
         // @ts-ignore invalid rtl types :'(

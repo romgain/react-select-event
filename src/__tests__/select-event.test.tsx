@@ -9,6 +9,7 @@ import selectEvent from "..";
 let Async: any;
 let Creatable: any;
 let AsyncCreatable: any;
+let IS_V2 = false;
 try {
   // v3
   Async = require("react-select/async").default;
@@ -19,7 +20,10 @@ try {
   Async = require("react-select/lib/Async").default;
   Creatable = require("react-select/lib/Creatable").default;
   AsyncCreatable = require("react-select/lib/AsyncCreatable").default;
+  IS_V2 = true;
 }
+
+const skip_on_v2 = IS_V2 ? xit : it;
 
 type Callback = (options: Options) => void;
 interface Option {
@@ -372,6 +376,20 @@ describe("The select event helpers", () => {
       expect(form).toHaveFormValues({ food: "" });
       await selectEvent.select(input, "Chocolate", {
         container: document.body,
+      });
+      expect(form).toHaveFormValues({ food: "chocolate" });
+    });
+
+    skip_on_v2("lazily targets the dropdown when selecting", async () => {
+      // skipping this test on react-select version 2 as the "...-menu" classname
+      // was only added with the move to emotion in v3
+      const { form, input } = renderForm(
+        <Select {...defaultProps} menuPortalTarget={document.body} />
+      );
+      expect(form).toHaveFormValues({ food: "" });
+      await selectEvent.select(input, "Chocolate", {
+        container: () =>
+          document.body.querySelector("[class$=-menu]") as HTMLElement,
       });
       expect(form).toHaveFormValues({ food: "chocolate" });
     });
