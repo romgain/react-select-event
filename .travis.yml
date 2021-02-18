@@ -11,6 +11,7 @@ before_install:
 script:
   - npm run type:check
   - npm run prettier:check
+  - npm test -- --coverage # enforce 100% coverage when testing against the latest react-select
   - npm run test:all-versions
   - npm run build
   - npm pack

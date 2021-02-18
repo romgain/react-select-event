@@ -108,6 +108,27 @@ await selectEvent.select(getByLabelText("Food"), ["Strawberry", "Mango"], {
 expect(getByRole("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
 ```
 
+The container can also be passed in as a function if it needs to be lazily evaluated:
+
+```jsx
+const { getByRole, getByLabelText } = render(
+  <form role="form">
+    <label htmlFor="food">Food</label>
+    <Select
+      options={OPTIONS}
+      name="food"
+      inputId="food"
+      isMulti
+      menuPortalTarget={document.body}
+    />
+  </form>
+);
+await selectEvent.select(getByLabelText("Food"), ["Strawberry", "Mango"], {
+  container: () => document.body.querySelector("[class$=-menu]"),
+});
+expect(getByRole("form")).toHaveFormValues({ food: ["strawberry", "mango"] });
+```
+
 ### `create(input: HTMLElement, option: string, config?: object): Promise<void> }`
 
 Creates and selects a new item. Only applicable to `react-select` [`Creatable`](https://react-select.com/creatable) elements.
