@@ -54,17 +54,25 @@ const renderForm = (select: React.ReactNode) => {
 
 describe("The openMenu event helper", () => {
   it("opens the menu", () => {
-    const { getByLabelText, queryByText } = render(
-      <form>
-        <label htmlFor="food">Food</label>
-        <Select {...defaultProps} />
-      </form>
+    const { getByLabelText, queryByText } = renderForm(
+      <Select {...defaultProps} />
     );
     // option is not yet visible
     expect(queryByText("Chocolate")).toBeNull();
     selectEvent.openMenu(getByLabelText("Food"));
     // option can now be seen because menu is open
     expect(queryByText("Chocolate")).toBeInTheDocument();
+  });
+
+  it("does not prevent selecting options", async () => {
+    const { form, input, getByText } = renderForm(<Select {...defaultProps} />);
+    selectEvent.openMenu(input);
+    expect(getByText("Chocolate")).toBeInTheDocument();
+    expect(getByText("Vanilla")).toBeInTheDocument();
+    expect(getByText("Strawberry")).toBeInTheDocument();
+    expect(getByText("Mango")).toBeInTheDocument();
+    await selectEvent.select(input, "Strawberry");
+    expect(form).toHaveFormValues({ food: "strawberry" });
   });
 });
 
