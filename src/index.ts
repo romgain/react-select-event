@@ -156,5 +156,18 @@ export const clearAll = async (input: HTMLElement) => {
   await clear(input, clearAllButton);
 };
 
-const selectEvent = { select, create, clearFirst, clearAll, openMenu };
+/**
+ * Utility for clear one option, when has multiple options selected in a `react-select` dropdown.
+ * When find multiple options to remove it will remove the first occurrence
+ * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`) 
+ * @param {String|RegExp} option The display name(s) for the option(s) to  remove
+ */
+ export const clearOne = async (input: HTMLElement, option: string | RegExp) => {
+  const container = getReactSelectContainerFromInput(input);
+  const options = await findAllByText(container, option);
+  const clearButton = options[0].parentNode?.querySelector('svg[aria-hidden="true"]')!;
+  await clear(input, clearButton);
+};
+
+const selectEvent = { select, create, clearFirst, clearAll, clearOne, openMenu };
 export default selectEvent;
