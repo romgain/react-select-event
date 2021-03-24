@@ -40,6 +40,9 @@ const OPTIONS: Options = [
 ];
 const defaultProps = { options: OPTIONS, name: "food", inputId: "food" };
 
+const matchText = (text: string | RegExp) => (content: string) =>
+  Boolean(content === text || content.match(text));
+
 const renderForm = (select: React.ReactNode) => {
   const result = render(
     <form role="form">
@@ -130,6 +133,45 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.select(input, /Chocolate/);
     expect(form).toHaveFormValues({ food: "chocolate" });
+  });
+
+  it("selects an option with a matcher function", async () => {
+    const { form, input } = renderForm(<Select {...defaultProps} />);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, matchText(/Chocolate/));
+    expect(form).toHaveFormValues({ food: "chocolate" });
+  });
+
+  it("selects several options with a matcher function", async () => {
+    const { form, input } = renderForm(<Select {...defaultProps} isMulti />);
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, ["Strawberry", /Mango/].map(matchText));
+    expect(form).toHaveFormValues({ food: ["strawberry", "mango"] });
+  });
+
+  it("selects an option with a number", async () => {
+    const { form, input } = renderForm(
+      <Select
+        {...defaultProps}
+        formatOptionLabel={(option) => option.label.length}
+      />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, 5);
+    expect(form).toHaveFormValues({ food: "mango" });
+  });
+
+  it("selects several options with a number", async () => {
+    const { form, input } = renderForm(
+      <Select
+        {...defaultProps}
+        formatOptionLabel={(option) => option.label.length}
+        isMulti
+      />
+    );
+    expect(form).toHaveFormValues({ food: "" });
+    await selectEvent.select(input, [7, 5]);
+    expect(form).toHaveFormValues({ food: ["vanilla", "mango"] });
   });
 
   it("types in and adds a new option", async () => {

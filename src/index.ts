@@ -1,11 +1,13 @@
 /** Simulate user events on react-select dropdowns */
 
 import {
+  Matcher,
   findAllByText,
   findByText,
   fireEvent,
   waitFor,
 } from "@testing-library/dom";
+
 import act from "./act-compat";
 
 // find the react-select container from its input field 🤷
@@ -53,7 +55,7 @@ interface Config {
 /**
  * Utility for selecting a value in a `react-select` dropdown.
  * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
- * @param {String|RegExp|String[]|RegExp[]} optionOrOptions The display name(s) for the option(s) to select
+ * @param {Matcher|Matcher[]} optionOrOptions The display name(s) for the option(s) to select
  * @param {Object} config Optional config options
  * @param {HTMLElement | (() => HTMLElement)} config.container A container for the react-select and its dropdown (defaults to the react-select container)
  *            Useful when rending the dropdown to a portal using react-select's `menuPortalTarget`.
@@ -61,7 +63,7 @@ interface Config {
  */
 export const select = async (
   input: HTMLElement,
-  optionOrOptions: string | RegExp | Array<string | RegExp>,
+  optionOrOptions: Matcher | Array<Matcher>,
   config: Config = {}
 ) => {
   const options = Array.isArray(optionOrOptions)
