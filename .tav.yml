@@ -1,4 +1,9 @@
 react-select:
-  versions: ^2.1 || ^3.0.2
-  commands: npm test
-  # we can't test agains 2.0.0 because of https://github.com/JedWatson/react-select/pull/2903
+  - versions: ^2.1 || ^3.0.2
+    commands: npm test
+    # we can't test agains 2.0.0 because of https://github.com/JedWatson/react-select/pull/2903
+    peerDependencies:
+      - react@16
+      - react-dom@16
+  - versions: ^4
+    commands: npm test
