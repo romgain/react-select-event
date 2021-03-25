@@ -40,7 +40,7 @@ Every helper exported by `react-select-event` takes a handle on the `react-selec
 
 ### `select(input: HTMLElement, optionOrOptions: Matcher | Array<Matcher>, config?: object): Promise<void>`
 
-The `optionOrOptions` param allow all [TextMatch](https://testing-library.com/docs/queries/about#textmatch) type (string, regex, function, number) that Dom testing library accept
+The `optionOrOptions` parameter can be any valid dom-testing-library [TextMatch](https://testing-library.com/docs/queries/about#textmatch) object (eg. string, regex, function, number).
 
 Select one or more values in a react-select dropdown.
 
