@@ -1,6 +1,6 @@
 {
   "name": "react-select-event",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "Simulate react-select events for react-testing-library",
   "main": "lib/react-select-event.cjs.js",
   "module": "lib/react-select-event.es.js",
@@ -52,8 +52,8 @@
     "@types/react-select": "^4.0.13",
     "jest": "^26.0.0",
     "prettier": "^2.0.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-select": "^4.0.2",
     "rimraf": "^3.0.0",
     "rollup": "^2.0.3",
