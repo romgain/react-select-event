@@ -1,0 +1,50 @@
+name: CI
+on:
+  push:
+    branches:
+      - '+([0-9])?(.{+([0-9]),x}).x'
+      - 'main'
+      - 'master'
+      - 'ci'
+      - 'test'
+      - 'next'
+      - 'next-major'
+      - 'beta'
+      - 'alpha'
+      - '!all-contributors/**'
+  pull_request: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['14', '16']
+    name: Build & test (Node ${{ matrix.node }})
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Install & build & test:
+      - run: npm install
+      - run: npm run type:check
+      - run: npm run prettier:check
+      - run: npm run test:all-versions
+      - run: npm run build
+      - run: npm pack
+
+  coverage:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm install -g codecov
+      - run: npm test -- --coverage # enforce 100% coverage when testing against the latest react-select
+      - run: codecov
