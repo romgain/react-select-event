@@ -344,6 +344,25 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "vanilla" });
   });
 
+  it("clear one item in a multi-select dropdown", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+      />
+    );
+    expect(form).toHaveFormValues({
+      food: ["chocolate", "vanilla", "strawberry"],
+    });
+
+    await selectEvent.clearOne(input, "Vanilla");
+
+    expect(form).toHaveFormValues({ 
+      food: ["chocolate", "strawberry"] 
+    });
+  });
+
   describe("when asynchronously generating the list of options", () => {
     // from https://github.com/JedWatson/react-select/blob/v3.0.0/docs/examples/CreatableAdvanced.js
     // mixed with Async Creatable Example from https://react-select.com/creatable
