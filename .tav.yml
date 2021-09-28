@@ -5,5 +5,5 @@ react-select:
     peerDependencies:
       - react@16
       - react-dom@16
-  - versions: ^4
+  - versions: ^4 || ^5
     commands: npm test
