@@ -12,8 +12,7 @@ import act from "./act-compat";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
-  return input.parentNode!.parentNode!.parentNode!.parentNode!
-    .parentNode as HTMLElement;
+  return input.closest('[class^="css-"], [class$="-container"]') as HTMLElement;
 }
 
 /**
