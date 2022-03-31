@@ -19,7 +19,6 @@ function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
 
   // for older versions of react-select fall back to old parent crawler
   if (!parent) {
-    console.log("index:19", "legacy crawler");
     parent = input.parentNode!.parentNode!.parentNode!.parentNode!
       .parentNode as HTMLElement;
   }
