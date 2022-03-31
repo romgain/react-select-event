@@ -18,6 +18,7 @@ function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
     input.closest('[class^=" css-"][class$="-container"]');
 
   // for older versions of react-select fall back to old parent crawler
+  // istanbul ignore if
   if (!parent) {
     parent = input.parentNode!.parentNode!.parentNode!.parentNode!
       .parentNode as HTMLElement;
