@@ -1,10 +1,10 @@
 /** Simulate user events on react-select dropdowns */
 
 import {
-  Matcher,
   findAllByText,
   findByText,
   fireEvent,
+  Matcher,
   waitFor,
 } from "@testing-library/dom";
 
@@ -12,8 +12,19 @@ import act from "./act-compat";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
-  return input.parentNode!.parentNode!.parentNode!.parentNode!
-    .parentNode as HTMLElement;
+  // i hate this so much but older versions insist on inserting a space before their generated class name
+  let parent =
+    input.closest('[class^="css-"][class$="-container"]') ||
+    input.closest('[class^=" css-"][class$="-container"]');
+
+  // for older versions of react-select fall back to old parent crawler
+  // istanbul ignore if
+  if (!parent) {
+    parent = input.parentNode!.parentNode!.parentNode!.parentNode!
+      .parentNode as HTMLElement;
+  }
+
+  return parent as HTMLElement;
 }
 
 /**
@@ -105,6 +116,7 @@ interface CreateConfig extends Config {
   createOptionText?: string | RegExp;
   waitForElement?: boolean;
 }
+
 /**
  * Utility for creating and selecting a value in a Creatable `react-select` dropdown.
  * @async
