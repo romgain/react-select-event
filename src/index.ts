@@ -92,7 +92,7 @@ export const select = async (
       ignore: "[aria-live] *,[style*='visibility: hidden']",
     });
 
-    await act(async () => {
+    act(() => {
       // When the target option is already selected, the react-select display text
       // will also match the selector. In this case, the actual dropdown element is
       // positioned last in the DOM tree.
