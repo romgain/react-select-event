@@ -95,7 +95,7 @@ export const select = async (
     await act(async () => {
       // When the target option is already selected, the react-select display text
       // will also match the selector. In this case, the actual dropdown element is
-      // positionned last in the DOM tree.
+      // positioned last in the DOM tree.
       const optionElement = matchingElements[matchingElements.length - 1];
       fireEvent.click(optionElement);
     });
