@@ -70,35 +70,36 @@ export const select = async (
     ? optionOrOptions
     : [optionOrOptions];
 
-  await act(async () => {
-    // Select the items we care about
-    for (const option of options) {
-      openMenu(input);
+  // Select the items we care about
+  for (const option of options) {
+    await openMenu(input);
 
-      let container;
-      if (typeof config.container === "function") {
-        // when specified as a function, the container needs to be lazily evaluated, so
-        // we have to wait for it to be visible:
-        await waitFor(config.container);
-        container = config.container();
-      } else if (config.container) {
-        container = config.container;
-      } else {
-        container = getReactSelectContainerFromInput(input);
-      }
-      // only consider visible, interactive elements
-      const matchingElements = await findAllByText(container, option, {
-        // @ts-ignore invalid rtl types :'(
-        ignore: "[aria-live] *,[style*='visibility: hidden']",
-      });
+    let container;
+    if (typeof config.container === "function") {
+      // when specified as a function, the container needs to be lazily evaluated, so
+      // we have to wait for it to be visible:
+      await waitFor(config.container);
+      container = config.container();
+    } else if (config.container) {
+      container = config.container;
+    } else {
+      container = getReactSelectContainerFromInput(input);
+    }
 
+    // only consider visible, interactive elements
+    const matchingElements = await findAllByText(container, option, {
+      // @ts-ignore invalid rtl types :'(
+      ignore: "[aria-live] *,[style*='visibility: hidden']",
+    });
+
+    act(() => {
       // When the target option is already selected, the react-select display text
       // will also match the selector. In this case, the actual dropdown element is
-      // positionned last in the DOM tree.
+      // positioned last in the DOM tree.
       const optionElement = matchingElements[matchingElements.length - 1];
       fireEvent.click(optionElement);
-    }
-  });
+    });
+  }
 };
 
 interface CreateConfig extends Config {
