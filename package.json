@@ -47,7 +47,7 @@
     "@babel/preset-typescript": "^7.3.3",
     "@testing-library/jest-dom": "^5.0.1",
     "@testing-library/react": "^12.1.5",
-    "@types/jest": "^27.0.1",
+    "@types/jest": "^29.1.2",
     "@types/react": "^17.0.47",
     "@types/react-select": "^5.0.1",
     "jest": "^27.0.4",
