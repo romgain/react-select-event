@@ -48,7 +48,7 @@
     "@testing-library/jest-dom": "^5.0.1",
     "@testing-library/react": "^12.1.5",
     "@types/jest": "^29.1.2",
-    "@types/react": "^17.0.47",
+    "@types/react": "^18.0.29",
     "@types/react-select": "^5.0.1",
     "jest": "^27.0.4",
     "prettier": "^2.0.2",
