@@ -79,7 +79,14 @@ describe("The openMenu event helper", () => {
     expect(form).toHaveFormValues({ food: "strawberry" });
   });
 
-    it("allows closing by clicking elsewhere", async () => {
+  it("fires focus event", async () => {
+    const focusCallback = jest.fn();
+    const { input } = renderForm(<Select {...defaultProps} onFocus={focusCallback} />);
+    selectEvent.openMenu(input);
+    expect(focusCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it("allows closing by clicking elsewhere", async () => {
     const { input, getByText, queryByText } = renderForm(<Select {...defaultProps} />);
     selectEvent.openMenu(input);
     expect(getByText("Chocolate")).toBeInTheDocument();
