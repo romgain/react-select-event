@@ -80,7 +80,7 @@ const { getByRole, getByLabelText } = render(
 expect(getByRole("form")).toHaveFormValues({ food: "" });
 
 // start typing to trigger the `loadOptions`
-fireEvent.change(getByLabelText("Food"), { target: { value: "Choc" } });
+userEvent.type(getByLabelText("Food"), "Choc");
 await selectEvent.select(getByLabelText("Food"), "Chocolate");
 expect(getByRole("form")).toHaveFormValues({
   food: ["chocolate"],
