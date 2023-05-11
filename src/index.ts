@@ -4,11 +4,9 @@ import {
   Matcher,
   findAllByText,
   findByText,
-  fireEvent,
   waitFor,
 } from "@testing-library/dom";
-
-import act from "./act-compat";
+import userEvent from "@testing-library/user-event";
 
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
@@ -16,36 +14,42 @@ function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
     .parentNode as HTMLElement;
 }
 
+type User = ReturnType<typeof userEvent.setup> | typeof userEvent;
+
+type UserEventOptions = {
+  user?: User;
+};
+
 /**
  * Utility for opening the select's dropdown menu.
  * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  */
-export const openMenu = (input: HTMLElement) => {
-  fireEvent.focus(input);
-  fireEvent.keyDown(input, {
-    key: "ArrowDown",
-    keyCode: 40,
-    code: 40,
-  });
+export const openMenu = async (
+  input: HTMLElement,
+  { user = userEvent }: UserEventOptions = {}
+) => {
+  await user.click(input);
+  await user.type(input, "{ArrowDown}");
 };
 
 // type text in the input field
-const type = (input: HTMLElement, text: string) => {
-  fireEvent.change(input, { target: { value: text } });
+const type = async (
+  input: HTMLElement,
+  text: string,
+  { user }: Required<UserEventOptions>
+) => {
+  await user.type(input, text);
 };
 
 // press the "clear" button, and reset various states
-const clear = async (input: HTMLElement, clearButton: Element) => {
-  await act(async () => {
-    fireEvent.mouseDown(clearButton);
-    fireEvent.click(clearButton);
-    // react-select will prevent the menu from opening, and asynchronously focus the select field...
-    await waitFor(() => {});
-    input.blur();
-  });
+const clear = async (
+  clearButton: Element,
+  { user }: Required<UserEventOptions>
+) => {
+  await user.click(clearButton);
 };
 
-interface Config {
+interface Config extends UserEventOptions {
   /** A container where the react-select dropdown gets rendered to.
    *  Useful when rendering the dropdown in a portal using `menuPortalTarget`.
    */
@@ -64,7 +68,7 @@ interface Config {
 export const select = async (
   input: HTMLElement,
   optionOrOptions: Matcher | Array<Matcher>,
-  config: Config = {}
+  { user = userEvent, ...config }: Config = {}
 ) => {
   const options = Array.isArray(optionOrOptions)
     ? optionOrOptions
@@ -72,7 +76,7 @@ export const select = async (
 
   // Select the items we care about
   for (const option of options) {
-    await openMenu(input);
+    await openMenu(input, { user });
 
     let container;
     if (typeof config.container === "function") {
@@ -92,17 +96,15 @@ export const select = async (
       ignore: "[aria-live] *,[style*='visibility: hidden']",
     });
 
-    act(() => {
-      // When the target option is already selected, the react-select display text
-      // will also match the selector. In this case, the actual dropdown element is
-      // positioned last in the DOM tree.
-      const optionElement = matchingElements[matchingElements.length - 1];
-      fireEvent.click(optionElement);
-    });
+    // When the target option is already selected, the react-select display text
+    // will also match the selector. In this case, the actual dropdown element is
+    // positioned last in the DOM tree.
+    const optionElement = matchingElements[matchingElements.length - 1];
+    await user.click(optionElement);
   }
 };
 
-interface CreateConfig extends Config {
+interface CreateConfig extends Config, UserEventOptions {
   createOptionText?: string | RegExp;
   waitForElement?: boolean;
 }
@@ -120,15 +122,13 @@ interface CreateConfig extends Config {
 export const create = async (
   input: HTMLElement,
   option: string,
-  { waitForElement = true, ...config }: CreateConfig = {}
+  { waitForElement = true, user = userEvent, ...config }: CreateConfig = {}
 ) => {
   const createOptionText = config.createOptionText || /^Create "/;
-  openMenu(input);
-  type(input, option);
+  await openMenu(input, { user });
+  await type(input, option, { user });
 
-  fireEvent.change(input, { target: { value: option } });
-
-  await select(input, createOptionText, config);
+  await select(input, createOptionText, { ...config, user });
 
   if (waitForElement) {
     await findByText(getReactSelectContainerFromInput(input), option);
@@ -139,25 +139,44 @@ export const create = async (
  * Utility for clearing the first value of a `react-select` dropdown.
  * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  */
-export const clearFirst = async (input: HTMLElement) => {
+export const clearFirst = async (
+  input: HTMLElement,
+  { user = userEvent }: UserEventOptions = {}
+) => {
   const container = getReactSelectContainerFromInput(input);
   // The "clear" button is the first svg element that is hidden to screen readers
   const clearButton = container.querySelector('svg[aria-hidden="true"]')!;
-  await clear(input, clearButton);
+  await clear(clearButton, { user });
 };
 
 /**
  * Utility for clearing all values in a `react-select` dropdown.
  * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  */
-export const clearAll = async (input: HTMLElement) => {
+export const clearAll = async (
+  input: HTMLElement,
+  { user = userEvent }: UserEventOptions = {}
+) => {
   const container = getReactSelectContainerFromInput(input);
   // The "clear all" button is the penultimate svg element that is hidden to screen readers
   // (the last one is the dropdown arrow)
   const elements = container.querySelectorAll('svg[aria-hidden="true"]');
   const clearAllButton = elements[elements.length - 2];
-  await clear(input, clearAllButton);
+  await clear(clearAllButton, { user });
 };
 
+const setup = (user: User): typeof selectEvent => ({
+  select: (...params: Parameters<typeof select>) =>
+    select(params[0], params[1], { user, ...params[2] }),
+  create: (...params: Parameters<typeof create>) =>
+    create(params[0], params[1], { user, ...params[2] }),
+  clearFirst: (...params: Parameters<typeof clearFirst>) =>
+    clearFirst(params[0], { user, ...params[1] }),
+  clearAll: (...params: Parameters<typeof clearAll>) =>
+    clearAll(params[0], { user, ...params[1] }),
+  openMenu: (...params: Parameters<typeof openMenu>) =>
+    openMenu(params[0], { user, ...params[1] }),
+});
+
 const selectEvent = { select, create, clearFirst, clearAll, openMenu };
-export default selectEvent;
+export default { ...selectEvent, setup };

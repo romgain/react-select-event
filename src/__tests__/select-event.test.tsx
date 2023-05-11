@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom/extend-expect";
 
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import React from "react";
 import Select from "react-select";
@@ -56,26 +57,54 @@ const renderForm = (select: React.ReactNode) => {
 };
 
 describe("The openMenu event helper", () => {
-  it("opens the menu", () => {
+  it("opens the menu", async () => {
     const { getByLabelText, queryByText } = renderForm(
       <Select {...defaultProps} />
     );
     // option is not yet visible
     expect(queryByText("Chocolate")).toBeNull();
-    selectEvent.openMenu(getByLabelText("Food"));
+    await selectEvent.openMenu(getByLabelText("Food"));
     // option can now be seen because menu is open
     expect(queryByText("Chocolate")).toBeInTheDocument();
   });
 
   it("does not prevent selecting options", async () => {
     const { form, input, getByText } = renderForm(<Select {...defaultProps} />);
-    selectEvent.openMenu(input);
+    await selectEvent.openMenu(input);
     expect(getByText("Chocolate")).toBeInTheDocument();
     expect(getByText("Vanilla")).toBeInTheDocument();
     expect(getByText("Strawberry")).toBeInTheDocument();
     expect(getByText("Mango")).toBeInTheDocument();
     await selectEvent.select(input, "Strawberry");
     expect(form).toHaveFormValues({ food: "strawberry" });
+  });
+
+  it("allows passing custom userEvent option", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+    jest.spyOn(user, "type");
+
+    const { input } = renderForm(<Select {...defaultProps} />);
+
+    await selectEvent.openMenu(input, { user });
+
+    expect(user.click).toHaveBeenCalledWith(input);
+    expect(user.type).toHaveBeenCalledWith(input, "{ArrowDown}");
+  });
+
+  it("allows passing custom userEvent option with setup", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+    jest.spyOn(user, "type");
+
+    const userSelectEvent = selectEvent.setup(user);
+
+    const { input } = renderForm(<Select {...defaultProps} />);
+
+    await userSelectEvent.openMenu(input);
+
+    expect(user.click).toHaveBeenCalledWith(input);
+    expect(user.type).toHaveBeenCalledWith(input, "{ArrowDown}");
   });
 });
 
@@ -240,6 +269,7 @@ describe("The select event helpers", () => {
   });
 
   it("selects an option in an async input", async () => {
+    const user = userEvent.setup();
     const loadOptions = (_: string, callback: Callback) =>
       setTimeout(() => callback(OPTIONS), 100);
     const { form, input } = renderForm(
@@ -248,7 +278,7 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "" });
 
     // start typing to trigger the `loadOptions`
-    fireEvent.change(input, { target: { value: "Choc" } });
+    await user.type(input, "Choc");
     await selectEvent.select(input, "Chocolate");
     expect(form).toHaveFormValues({ food: "chocolate" });
   });
@@ -344,6 +374,42 @@ describe("The select event helpers", () => {
     expect(form).toHaveFormValues({ food: "vanilla" });
   });
 
+  it("allows passing custom userEvent option", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+    jest.spyOn(user, "type");
+
+    const { input } = renderForm(<Select {...defaultProps} />);
+
+    await selectEvent.select(input, "Chocolate", { user });
+
+    // Open the dropdown
+    expect(user.type).toHaveBeenCalledWith(input, "{ArrowDown}");
+    expect(user.click).toHaveBeenNthCalledWith(1, input);
+
+    // Difficult to get correct element here but it's fine as long as we get an element
+    expect(user.click).toHaveBeenNthCalledWith(2, expect.any(HTMLDivElement));
+  });
+
+  it("allows passing custom userEvent option with setup", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+    jest.spyOn(user, "type");
+
+    const userSelectEvent = selectEvent.setup(user);
+
+    const { input } = renderForm(<Select {...defaultProps} />);
+
+    await userSelectEvent.select(input, "Chocolate");
+
+    // Open the dropdown
+    expect(user.type).toHaveBeenCalledWith(input, "{ArrowDown}");
+    expect(user.click).toHaveBeenNthCalledWith(1, input);
+
+    // Difficult to get correct element here but it's fine as long as we get an element
+    expect(user.click).toHaveBeenNthCalledWith(2, expect.any(HTMLDivElement));
+  });
+
   describe("when asynchronously generating the list of options", () => {
     // from https://github.com/JedWatson/react-select/blob/v3.0.0/docs/examples/CreatableAdvanced.js
     // mixed with Async Creatable Example from https://react-select.com/creatable
@@ -416,6 +482,56 @@ describe("The select event helpers", () => {
 
       expect(form).toHaveFormValues({ food: "papaya" });
     });
+
+    it("allows passing custom userEvent option", async () => {
+      const user = userEvent.setup();
+      jest.spyOn(user, "click");
+      jest.spyOn(user, "type");
+
+      const { input } = renderForm(<CreatableAdvanced {...defaultProps} />);
+
+      await selectEvent.create(input, "papaya", { user });
+
+      // Open the dropdown
+      expect(user.click).toHaveBeenNthCalledWith(1, input);
+      expect(user.type).toHaveBeenCalledWith(input, "{ArrowDown}");
+
+      // Create option
+      expect(user.type).toHaveBeenNthCalledWith(2, input, "papaya");
+
+      // Open dropdown again
+      expect(user.click).toHaveBeenNthCalledWith(2, input);
+
+      // Select the new option
+      // Difficult to get correct element here but it's fine as long as we get an element
+      expect(user.click).toHaveBeenNthCalledWith(3, expect.any(HTMLDivElement));
+    });
+
+    it("allows passing custom userEvent option with setup", async () => {
+      const user = userEvent.setup();
+      jest.spyOn(user, "click");
+      jest.spyOn(user, "type");
+
+      const userSelectEvent = selectEvent.setup(user);
+
+      const { input } = renderForm(<CreatableAdvanced {...defaultProps} />);
+
+      await userSelectEvent.create(input, "papaya");
+
+      // Open the dropdown
+      expect(user.click).toHaveBeenNthCalledWith(1, input);
+      expect(user.type).toHaveBeenCalledWith(input, "{ArrowDown}");
+
+      // Create option
+      expect(user.type).toHaveBeenNthCalledWith(2, input, "papaya");
+
+      // Open dropdown again
+      expect(user.click).toHaveBeenNthCalledWith(2, input);
+
+      // Select the new option
+      // Difficult to get correct element here but it's fine as long as we get an element
+      expect(user.click).toHaveBeenNthCalledWith(3, expect.any(HTMLDivElement));
+    });
   });
 
   describe("when rendering the dropdown in a portal", () => {
@@ -452,39 +568,119 @@ describe("The select event helpers", () => {
       await selectEvent.create(input, "papaya", { container: document.body });
       expect(form).toHaveFormValues({ food: "papaya" });
     });
+  });
+});
 
-    it("clears the first item in a multi-select dropdown", async () => {
-      const { form, input } = renderForm(
-        <Creatable
-          {...defaultProps}
-          isMulti
-          defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
-          menuPortalTarget={document.body}
-        />
-      );
-      expect(form).toHaveFormValues({
-        food: ["chocolate", "vanilla", "strawberry"],
-      });
-
-      await selectEvent.clearFirst(input);
-      expect(form).toHaveFormValues({ food: ["vanilla", "strawberry"] });
+describe("clearFirst", () => {
+  it("clears the first item in a multi-select dropdown", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        menuPortalTarget={document.body}
+      />
+    );
+    expect(form).toHaveFormValues({
+      food: ["chocolate", "vanilla", "strawberry"],
     });
 
-    it("clears all items", async () => {
-      const { form, input } = renderForm(
-        <Creatable
-          {...defaultProps}
-          isMulti
-          defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
-          menuPortalTarget={document.body}
-        />
-      );
-      expect(form).toHaveFormValues({
-        food: ["chocolate", "vanilla", "strawberry"],
-      });
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: ["vanilla", "strawberry"] });
+  });
 
-      await selectEvent.clearAll(input);
-      expect(form).toHaveFormValues({ food: "" });
+  it("allows passing custom userEvent option", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+
+    const { input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        menuPortalTarget={document.body}
+      />
+    );
+
+    await selectEvent.clearFirst(input, { user });
+
+    expect(user.click).toHaveBeenCalledWith(expect.any(SVGSVGElement));
+  });
+
+  it("allows passing custom userEvent option with setup", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+
+    const userSelectEvent = selectEvent.setup(user);
+
+    const { input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        menuPortalTarget={document.body}
+      />
+    );
+
+    await userSelectEvent.clearFirst(input);
+
+    expect(user.click).toHaveBeenCalledWith(expect.any(SVGSVGElement));
+  });
+});
+
+describe("clearAll", () => {
+  it("clears all items", async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        menuPortalTarget={document.body}
+      />
+    );
+    expect(form).toHaveFormValues({
+      food: ["chocolate", "vanilla", "strawberry"],
     });
+
+    await selectEvent.clearAll(input);
+    expect(form).toHaveFormValues({ food: "" });
+  });
+
+  it("allows passing custom userEvent option", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+
+    const { input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        menuPortalTarget={document.body}
+      />
+    );
+
+    await selectEvent.clearAll(input, { user });
+
+    expect(user.click).toHaveBeenCalledWith(expect.any(SVGSVGElement));
+  });
+
+  it("allows passing custom userEvent option with setup", async () => {
+    const user = userEvent.setup();
+    jest.spyOn(user, "click");
+
+    const userSelectEvent = selectEvent.setup(user);
+
+    const { input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        menuPortalTarget={document.body}
+      />
+    );
+
+    await userSelectEvent.clearAll(input);
+
+    expect(user.click).toHaveBeenCalledWith(expect.any(SVGSVGElement));
   });
 });
