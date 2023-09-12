@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/extend-expect";
 import { fireEvent, render } from "@testing-library/react";
 
 import React from "react";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import selectEvent from "..";
 
 let Async: any;
@@ -286,7 +286,7 @@ describe("The select event helpers", () => {
       <Select {...defaultProps} defaultValue={OPTIONS[0]} isClearable />
     );
     expect(form).toHaveFormValues({ food: "chocolate" });
-    await selectEvent.clearFirst(input);
+    await selectEvent.clearAll(input);
     expect(form).toHaveFormValues({ food: "" });
   });
 
@@ -295,7 +295,7 @@ describe("The select event helpers", () => {
       <Select {...defaultProps} defaultValue={OPTIONS[0]} isClearable />
     );
     expect(form).toHaveFormValues({ food: "chocolate" });
-    await selectEvent.clearFirst(input);
+    await selectEvent.clearAll(input);
     expect(form).toHaveFormValues({ food: "" });
     await selectEvent.select(input, "Chocolate");
     expect(form).toHaveFormValues({ food: "chocolate" });
@@ -488,3 +488,45 @@ describe("The select event helpers", () => {
     });
   });
 });
+
+describe("Custom components", () => {
+  const MultiValueRemove = (props: any) => <components.MultiValueRemove {...props}><span>X</span></components.MultiValueRemove>
+  const ClearIndicator = (props: any) => <components.ClearIndicator {...props}><span>X</span></components.ClearIndicator>
+
+  it('clears all the items', async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        components={{
+          ClearIndicator,
+        }}
+      />
+    );
+    expect(form).toHaveFormValues({
+      food: ["chocolate", "vanilla", "strawberry"],
+    });
+
+    await selectEvent.clearAll(input);
+    expect(form).toHaveFormValues({ food: "" });
+  })
+  it('clears the first item', async () => {
+    const { form, input } = renderForm(
+      <Creatable
+        {...defaultProps}
+        isMulti
+        defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        components={{
+          MultiValueRemove,
+        }}
+      />
+    );
+    expect(form).toHaveFormValues({
+      food: ["chocolate", "vanilla", "strawberry"],
+    });
+
+    await selectEvent.clearFirst(input);
+    expect(form).toHaveFormValues({ food: ["vanilla", "strawberry"] });
+  })
+})
