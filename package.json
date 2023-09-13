@@ -35,7 +35,7 @@
     "url": "https://github.com/romgain/react-select-event/issues"
   },
   "homepage": "https://github.com/romgain/react-select-event#readme",
-  "dependencies": {
+  "peerDependencies": {
     "@testing-library/dom": ">=7"
   },
   "devDependencies": {
