@@ -10,8 +10,30 @@ import {
 
 import act from "./act-compat";
 
+function findReactSelectContainerByClassName(
+  element: HTMLElement
+): HTMLElement | null {
+  if (
+    Array.from(element.classList).some((className) =>
+      className.match(/^css-[a-z0-9]+-container$/)
+    )
+  ) {
+    return element;
+  }
+  if (!element.parentElement) {
+    return null;
+  }
+  return findReactSelectContainerByClassName(element.parentElement);
+}
+
 // find the react-select container from its input field 🤷
 function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
+  const container = findReactSelectContainerByClassName(input);
+  if (container) {
+    return container;
+  }
+  // for older versions of react-select fall back to old parent crawler
+  // istanbul ignore if
   return input.parentNode!.parentNode!.parentNode!.parentNode!
     .parentNode as HTMLElement;
 }
