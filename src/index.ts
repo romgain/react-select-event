@@ -21,7 +21,7 @@ function getReactSelectContainerFromInput(input: HTMLElement): HTMLElement {
  * @param {HTMLElement} input The input field (eg. `getByLabelText('The label')`)
  */
 export const openMenu = (input: HTMLElement) => {
-  fireEvent.focus(input);
+  input.focus();
   fireEvent.keyDown(input, {
     key: "ArrowDown",
     keyCode: 40,

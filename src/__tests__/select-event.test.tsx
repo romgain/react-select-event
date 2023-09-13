@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom/extend-expect";
 
 import { fireEvent, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import React from "react";
 import Select from "react-select";
@@ -76,6 +77,35 @@ describe("The openMenu event helper", () => {
     expect(getByText("Mango")).toBeInTheDocument();
     await selectEvent.select(input, "Strawberry");
     expect(form).toHaveFormValues({ food: "strawberry" });
+  });
+
+  it("fires focus event", async () => {
+    const focusCallback = jest.fn();
+    const { input } = renderForm(<Select {...defaultProps} onFocus={focusCallback} />);
+    selectEvent.openMenu(input);
+    expect(focusCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it("allows closing by clicking elsewhere", async () => {
+    const { input, getByText, queryByText } = renderForm(<Select {...defaultProps} />);
+    selectEvent.openMenu(input);
+    expect(getByText("Chocolate")).toBeInTheDocument();
+    expect(getByText("Vanilla")).toBeInTheDocument();
+    expect(getByText("Strawberry")).toBeInTheDocument();
+    expect(getByText("Mango")).toBeInTheDocument();
+    await userEvent.click(document.body);
+    expect(queryByText("Chocolate")).not.toBeInTheDocument();
+    expect(queryByText("Vanilla")).not.toBeInTheDocument();
+    expect(queryByText("Strawberry")).not.toBeInTheDocument();
+    expect(queryByText("Mango")).not.toBeInTheDocument();
+  });
+
+  it("allows blur event to fire when clicking elsewhere", async () => {
+    const blurCallback = jest.fn();
+    const { input } = renderForm(<Select {...defaultProps} onBlur={blurCallback} />);
+    selectEvent.openMenu(input);
+    await userEvent.click(document.body);
+    expect(blurCallback).toHaveBeenCalledTimes(1);
   });
 });
 
