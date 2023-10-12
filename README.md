@@ -199,6 +199,32 @@ await selectEvent.clearAll(getByLabelText("Food"));
 expect(getByRole("form")).toHaveFormValues({ food: "" });
 ```
 
+### `clearOne(input: HTMLElement, option: string | RegExp): Promise<void>`
+
+Clear one selected value in the dropdown.
+
+```jsx
+const { getByRole, getByLabelText } = render(
+  <form role="form">
+    <label htmlFor="food">Food</label>
+    <Creatable
+      defaultValue={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+      options={OPTIONS}
+      name="food"
+      inputId="food"
+      isMulti
+    />
+  </form>
+);
+expect(getByRole("form")).toHaveFormValues({
+  food: ["chocolate", "vanilla", "strawberry"],
+});
+await selectEvent.clearOne(getByLabelText("Food"), "Vanilla");
+expect(getByRole("form")).toHaveFormValues({
+  food: ["chocolate", "strawberry"],
+});
+```
+
 ### `openMenu(input: HTMLElement): void`
 
 Opens the select dropdown menu by focusing the input and simulating a down arrow keypress.
